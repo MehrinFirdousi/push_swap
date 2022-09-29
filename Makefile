@@ -12,7 +12,7 @@
 
 NAME	=	push_swap
 
-SRCS	=	srcs/push_swap.c
+SRCS	=	srcs/push_swap.c srcs/operations.c
 
 OBJS	=	${SRCS:.c=.o}
 

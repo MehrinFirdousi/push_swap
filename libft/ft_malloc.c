@@ -1,34 +1,23 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   push_swap.h                                        :+:      :+:    :+:   */
+/*   ft_malloc.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mfirdous <mfirdous@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/09/26 21:41:47 by mfirdous          #+#    #+#             */
-/*   Updated: 2022/09/26 21:41:47 by mfirdous         ###   ########.fr       */
+/*   Created: 2022/09/29 14:40:01 by mfirdous          #+#    #+#             */
+/*   Updated: 2022/09/29 14:40:01 by mfirdous         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef PUSH_SWAP_H
-# define PUSH_SWAP_H
+#include "libft.h"
 
-# ifdef _WIN32
-#  define EXIT_SUCCESS 0
-#  define EXIT_FAILURE 1
-# else
-#  include <unistd.h>
-# endif
-
-# include <stdio.h>
-# include <stdlib.h>
-# include <limits.h>
-# include "libft.h"
-
-typedef struct	s_stack
+void	*ft_malloc(size_t size)
 {
-	int	*stack;
-	int	top;
-}				t_stack;
+	void	*ptr;
 
-#endif
+	ptr = malloc(size);
+	if (!ptr)
+		exit(EXIT_FAILURE);
+	return (ptr);
+}

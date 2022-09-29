@@ -41,54 +41,58 @@ int	ft_atoi_ofd(const char *nptr)
 	return (sign * sum);
 }
 
+int	check_error(int )
+{
+
+}
+
 int	*create_stack_a(int len, char **argv)
 {
 	int	*a;
 	int	i;
 	int	j;
 
-	a = (int *)malloc(sizeof(int) * len);
-	if (!a)
-		return (NULL);
+	a = (int *)ft_malloc(sizeof(int) * len);
 	i = -1;
-	while (argv[++i])
+	while ((len - ++i) > 0)
 	{
-		a[i] = ft_atoi_ofd(argv[i]);
-		if (a[i] == 0 && argv[i][0] != '0')
+		a[i] = ft_atoi_ofd(argv[len - i]);
+		if (a[i] == 0 && argv[len - i][0] != '0')
 		{
 			free(a);
+			ft_printf("Error\n");
 			return (NULL);
 		}
 		j = -1;
 		while (++j < i)
+		{
 			if (a[i] == a[j])
 			{
 				free(a);
-				return (NULL);
+				ft_printf("Error\n");
+				exit(EXIT_FAILURE);
 			}
+		}
 	}
 	return (a);
 }
 
 int	main(int argc, char **argv)
 {
-	int	*a;
-	int	*b;
-	int	i;
+	t_stack	a;
+	t_stack	b;
+	int		i;
 
 	if (argc == 1)
 		return (0);
-	a = create_stack_a(argc - 1, argv + 1);
-	if (!a)
-	{
-		ft_printf("Error\n");
-		return (EXIT_FAILURE);
-	}
+	a.stack = create_stack_a(argc - 1, argv);
+	a.top = argc - 1;
 	i = -1;
 	while (++i < argc -1)
-		printf("%d\n", a[i]);
-	b = (int *)malloc(sizeof(int) * argc - 1);
-	free(a);
-	free(b);
+		printf("%d\n", a.stack[i]);
+	b.stack = (int *)ft_malloc(sizeof(int) * argc - 1);
+	b.top = -1;
+	free(a.stack);
+	free(b.stack);
 	return (0);
 }
