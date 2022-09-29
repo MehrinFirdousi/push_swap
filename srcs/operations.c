@@ -12,67 +12,78 @@
 
 #include "push_swap.h"
 
-void	sa(t_stack a)
+// Swap the first 2 elements at the top of stack a
+void	sa(t_stack *a)
 {
-	int temp;
+	int	temp;
+	int	top;
 
-	if (a.top > 0)
+	top = a->top;
+	if (a->top > -1)
 	{
-		temp = a.stack[0];
-		a.stack[0] = a.stack[1];
-		a.stack[1] = temp;
+		temp = a->stack[top];
+		a->stack[top] = a->stack[top - 1];
+		a->stack[top - 1] = temp;
 	}
 }
 
-void	ss(t_stack a, t_stack b)
+// sa and sb at the same time
+void	ss(t_stack *a, t_stack *b)
 {
 	sa(a);
 	sa(b);
 }
 
-void	pa(t_stack a, t_stack b)
+// Take the first element at the top of b and put it at the top of a
+void	pa(t_stack *a, t_stack *b)
 {
-	if (b.top != -1)
-		a.stack[++a.top] = b.stack[b.top--];
+	printf("1.top = %d, 2.top = %d\n", a->top, b->top);
+	if (b->top != -1)
+		a->stack[++a->top] = b->stack[b->top--];
+	printf("1.top = %d, 2.top = %d\n", a->top, b->top);
 }
 
-void	ra(t_stack a)
+//  Shift up all elements of stack a by 1
+void	ra(t_stack *a)
 {
 	int	old_top;
 	int	i;
 
-	if (a.top != -1)
+	if (a->top != -1)
 	{
-		old_top = a.stack[a.top];
-		i = a.top;
-		while(--i > 0)
-			a.stack[i] = a.stack[i - 1];
-		a.stack[0] = old_top;
+		old_top = a->stack[a->top];
+		i = a->top;
+		while (--i > 0)
+			a->stack[i] = a->stack[i - 1];
+		a->stack[0] = old_top;
 	}
 }
 
-void	rr(t_stack a, t_stack b)
+// ra and rb at the same time
+void	rr(t_stack *a, t_stack *b)
 {
 	ra(a);
 	ra(b);
 }
 
-void	rra(t_stack a)
+//  Shift down all elements of stack a by 1
+void	rra(t_stack *a)
 {
 	int	old_last;
 	int	i;
 
-	if (a.top != -1)
+	if (a->top != -1)
 	{
-		old_last = a.stack[0];
+		old_last = a->stack[0];
 		i = -1;
-		while(++i < a.top)
-			a.stack[i] = a.stack[i + 1];
-		a.stack[a.top] = old_last;
+		while (++i < a->top)
+			a->stack[i] = a->stack[i + 1];
+		a->stack[a->top] = old_last;
 	}
 }
 
-void	rrr(t_stack a, t_stack b)
+// rra and rrb at the same time
+void	rrr(t_stack *a, t_stack *b)
 {
 	rra(a);
 	rra(b);
@@ -83,6 +94,6 @@ void	rrr(t_stack a, t_stack b)
 		2 should be at the top of the stack and the stack will 
 		grow from the right, so fill the stack array starting from
 		end of args
-		a.stack = {9, 4, 6, 0, 1, 5, 3, 2}
+		a->stack = {9, 4, 6, 0, 1, 5, 3, 2}
 				0  1  2  3  4  5  6  7	8
 */

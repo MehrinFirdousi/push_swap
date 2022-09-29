@@ -25,10 +25,18 @@
 # include <limits.h>
 # include "libft.h"
 
-typedef struct	s_stack
+typedef struct s_stack
 {
 	int	*stack;
 	int	top;
-}				t_stack;
+}	t_stack;
+
+void	sa(t_stack *a);
+void	ss(t_stack *a, t_stack *b);
+void	pa(t_stack *a, t_stack *b);
+void	ra(t_stack *a);
+void	rr(t_stack *a, t_stack *b);
+void	rra(t_stack *a);
+void	rrr(t_stack *a, t_stack *b);
 
 #endif
