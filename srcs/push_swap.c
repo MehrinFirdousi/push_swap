@@ -72,14 +72,30 @@ t_stack	*create_stack_a(int len, char **argv)
 	return (a);
 }
 
-void	print_stack(t_stack *s)
+void	print_stack(t_stack *a, t_stack *b)
 {
 	int	i;
+	int top_a;
+	int top_b;
 
-	i = s->top + 1;
-	printf("stack top = %d\n", s->top);
+	top_a = (!a? -1 : a->top);
+	top_b = (!b? -1 : b->top);
+	// printf("top_a = %d, top_b = %d\n", top_a, top_b);
+	i = (top_a >= top_b? top_a : top_b) + 1;
+	// printf("big stack top = %d\n", i - 1);
 	while (--i >= 0)
-		printf("%d\n", s->stack[i]);
+	{
+		printf("%d\t", i);
+		if (i <= top_a)
+			printf("%d", a->stack[i]);
+		printf("\t");
+		if (i <= top_b)
+			printf("%d", b->stack[i]);
+		printf("\n");
+	}
+	printf("_\t_\t_\n");
+	printf("i\ta\tb\n");
+	printf("-----------------\n");
 }
 
 t_stack	*init_stack(int len)
@@ -92,6 +108,54 @@ t_stack	*init_stack(int len)
 	return (s);
 }
 
+// returns the index of the smallest element in the stack
+int	find_min(t_stack *s)
+{
+	int	i;
+	int	min_index;
+
+	i = s->top + 1;
+	min_index = s->top;
+	while (--i >= 0)
+		if (s->stack[i] < s->stack[min_index])
+			min_index = i;
+	return (min_index);
+}
+
+int	is_sorted(t_stack *s)
+{
+	int i;
+
+	i = s->top + 1;
+	while (--i > 0)
+		if (s->stack[i] > s->stack[i - 1])
+			return (i);
+	return (0);
+}
+
+void	sort_stack(t_stack *a, t_stack *b)
+{
+	int	min;
+
+	while (a->top > 0)
+	{
+		if (is_sorted(a) == 0)
+			break;
+		min = find_min(a);
+		if (a->top - min == 1)
+			sa(a);
+		else if (min >= a->top / 2)
+			while (++min <= a->top)
+				ra(a);
+		else if (min < a->top / 2)
+			while (--min >= -1)
+				rra(a);
+		pb(a, b);
+	}
+	while (b->top != -1)
+		pa(a, b);
+}
+
 int	main(int argc, char **argv)
 {
 	t_stack	*a;
@@ -100,17 +164,12 @@ int	main(int argc, char **argv)
 	if (argc == 1)
 		return (0);
 	a = create_stack_a(argc - 1, argv);
-	print_stack(a);
-	sa(a);
-
 	b = init_stack(argc - 1);
-	print_stack(b);
-
-	pa(b, a);
-	print_stack(b);
-	pa(a, b);
-	print_stack(a);
-
+	// print_stack(a, b);
+	//printf("is sorted till: %d\n", is_sorted(a));
+	//printf("min = %d\n", find_min(a));
+	sort_stack(a, b);
+	// print_stack(a, b);
 	free(a->stack);
 	free(a);
 	free(b->stack);

@@ -31,12 +31,19 @@ typedef struct s_stack
 	int	top;
 }	t_stack;
 
+void	print_stack(t_stack *a, t_stack *b);
 void	sa(t_stack *a);
-void	ss(t_stack *a, t_stack *b);
+void	sb(t_stack *a);
 void	pa(t_stack *a, t_stack *b);
+void	pb(t_stack *a, t_stack *b);
+
 void	ra(t_stack *a);
-void	rr(t_stack *a, t_stack *b);
+void	rb(t_stack *a);
 void	rra(t_stack *a);
+void	rrb(t_stack *a);
+
+void	ss(t_stack *a, t_stack *b);
+void	rr(t_stack *a, t_stack *b);
 void	rrr(t_stack *a, t_stack *b);
 
 #endif
