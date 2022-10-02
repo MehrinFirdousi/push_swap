@@ -49,34 +49,63 @@ int	exit_err(t_stack *a)
 	exit(EXIT_FAILURE);
 }
 
-t_stack	*create_stack_a(int len, char **argv)
+char	**parse_args(char **argv, int *count)
+{
+	char	*nums_str;
+	char	*temp;
+	char	**nums;
+	int		i;
+
+	nums_str = argv[0];
+	i = 0;
+	while (argv[++i])
+	{
+		temp = nums_str;
+		nums_str = ft_strjoin(nums_str, " ");
+		free(temp);
+		temp = nums_str;
+		nums_str = ft_strjoin(nums_str, argv[i]);
+		free(temp);
+	}
+	nums = ft_split(nums_str, ' ');
+	i = -1;
+	while(nums[++i])
+		;
+	*count = i;
+	return (nums);
+}
+
+t_stack	*create_stack_a(char **argv)
 {
 	t_stack	*a;
-	int	i;
-	int	j;
+	char	**nums;
+	int		i;
+	int		j;
+	int		count;
 
+	nums = parse_args(argv + 1, &count);
 	a = (t_stack *)ft_malloc(sizeof(t_stack));
-	a->stack = (int *)ft_malloc(sizeof(int) * len);
+	a->stack = (int *)ft_malloc(sizeof(int) * count);
 	i = -1;
-	while ((len - ++i) > 0)
+	while ((count - ++i) > 0)
 	{
-		a->stack[i] = ft_atoi_ofd(argv[len - i]);
-		if (a->stack[i] == 0 && argv[len - i][0] != '0')
+		a->stack[i] = ft_atoi_ofd(argv[count - i]);
+		if (a->stack[i] == 0 && argv[count - i][0] != '0')
 			exit_err(a);
 		j = -1;
 		while (++j < i)
 			if (a->stack[i] == a->stack[j])
 				exit_err(a);
 	}
-	a->top = len - 1;
+	a->top = count - 1;
 	return (a);
 }
 
 void	print_stack(t_stack *a, t_stack *b)
 {
 	int	i;
-	int top_a;
-	int top_b;
+	int	top_a;
+	int	top_b;
 
 	top_a = (!a? -1 : a->top);
 	top_b = (!b? -1 : b->top);
@@ -100,7 +129,7 @@ void	print_stack(t_stack *a, t_stack *b)
 
 t_stack	*init_stack(int len)
 {
-	t_stack *s;
+	t_stack	*s;
 
 	s = (t_stack *)ft_malloc(sizeof(t_stack));
 	s->stack = (int *)ft_malloc(sizeof(int) * len);
@@ -124,7 +153,7 @@ int	find_min(t_stack *s)
 
 int	is_sorted(t_stack *s)
 {
-	int i;
+	int	i;
 
 	i = s->top + 1;
 	while (--i > 0)
@@ -140,7 +169,7 @@ void	sort_stack(t_stack *a, t_stack *b)
 	while (a->top > 0)
 	{
 		if (is_sorted(a) == 0)
-			break;
+			break ;
 		min = find_min(a);
 		if (a->top - min == 1)
 			sa(a);
