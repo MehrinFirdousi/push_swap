@@ -44,7 +44,6 @@ void	sb(t_stack *b)
 	ft_printf("sb\n");
 }
 
-
 // Take the first element at the top of b and put it at the top of a
 void	pa(t_stack *a, t_stack *b)
 {
@@ -60,7 +59,6 @@ void	pb(t_stack *a, t_stack *b)
 		b->stack[++b->top] = a->stack[a->top--];
 	ft_printf("pb\n");
 }
-
 
 /* TODO:
 	1.	./push_swap 2 3 5 1 0 6 4 9

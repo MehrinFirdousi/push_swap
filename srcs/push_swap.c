@@ -56,22 +56,22 @@ char	**parse_args(char **argv, int *count)
 	char	**nums;
 	int		i;
 
-	nums_str = argv[0];
+	nums_str = ft_strdup(argv[0]);
 	i = 0;
 	while (argv[++i])
 	{
-		temp = nums_str;
-		nums_str = ft_strjoin(nums_str, " ");
-		free(temp);
-		temp = nums_str;
-		nums_str = ft_strjoin(nums_str, argv[i]);
-		free(temp);
+		temp = ft_strjoin(nums_str, " ");
+		free(nums_str);
+		nums_str = temp;
+		temp = ft_strjoin(nums_str, argv[i]);
+		free(nums_str);
+		nums_str = temp;
 	}
 	nums = ft_split(nums_str, ' ');
+	free(nums_str);
 	i = -1;
-	while(nums[++i])
-		printf("nums[%d] = %s\n", i, nums[i]);
-		
+	while (nums[++i])
+		;
 	*count = i;
 	return (nums);
 }
@@ -98,7 +98,7 @@ t_stack	*create_stack_a(char **argv)
 		while (++j < i)
 			if (a->stack[i] == a->stack[j])
 				exit_err(a);
-		free(nums[i]);
+		free(nums[count - i]);
 	}
 	a->top = count;
 	free(nums);
@@ -113,9 +113,7 @@ void	print_stack(t_stack *a, t_stack *b)
 
 	top_a = (!a? -1 : a->top);
 	top_b = (!b? -1 : b->top);
-	// printf("top_a = %d, top_b = %d\n", top_a, top_b);
 	i = (top_a >= top_b? top_a : top_b) + 1;
-	// printf("big stack top = %d\n", i - 1);
 	while (--i >= 0)
 	{
 		printf("%d\t", i);
@@ -172,8 +170,8 @@ void	sort_stack(t_stack *a, t_stack *b)
 
 	while (a->top > 0)
 	{
-		if (is_sorted(a) == 0)
-			break ;
+		// if (is_sorted(a) == 0)
+		// 	break ;
 		min = find_min(a);
 		if (a->top - min == 1)
 			sa(a);
@@ -183,6 +181,8 @@ void	sort_stack(t_stack *a, t_stack *b)
 		else if (min < a->top / 2)
 			while (--min >= -1)
 				rra(a);
+		if (is_sorted(a) == 0)
+			break ;
 		pb(a, b);
 	}
 	while (b->top != -1)
@@ -197,10 +197,8 @@ int	main(int argc, char **argv)
 	if (argc == 1)
 		return (0);
 	a = create_stack_a(argv);
-	b = init_stack(argc - 1);
+	b = init_stack(a->top + 1);
 	// print_stack(a, b);
-	//printf("is sorted till: %d\n", is_sorted(a));
-	//printf("min = %d\n", find_min(a));
 	sort_stack(a, b);
 	// print_stack(a, b);
 	free(a->stack);
