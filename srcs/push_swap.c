@@ -70,7 +70,8 @@ char	**parse_args(char **argv, int *count)
 	nums = ft_split(nums_str, ' ');
 	i = -1;
 	while(nums[++i])
-		;
+		printf("nums[%d] = %s\n", i, nums[i]);
+		
 	*count = i;
 	return (nums);
 }
@@ -86,18 +87,21 @@ t_stack	*create_stack_a(char **argv)
 	nums = parse_args(argv + 1, &count);
 	a = (t_stack *)ft_malloc(sizeof(t_stack));
 	a->stack = (int *)ft_malloc(sizeof(int) * count);
+	count -= 1;
 	i = -1;
-	while ((count - ++i) > 0)
+	while (nums[++i])
 	{
-		a->stack[i] = ft_atoi_ofd(argv[count - i]);
-		if (a->stack[i] == 0 && argv[count - i][0] != '0')
+		a->stack[i] = ft_atoi_ofd(nums[count - i]);
+		if (a->stack[i] == 0 && nums[count - i][0] != '0')
 			exit_err(a);
 		j = -1;
 		while (++j < i)
 			if (a->stack[i] == a->stack[j])
 				exit_err(a);
+		free(nums[i]);
 	}
-	a->top = count - 1;
+	a->top = count;
+	free(nums);
 	return (a);
 }
 
@@ -192,7 +196,7 @@ int	main(int argc, char **argv)
 
 	if (argc == 1)
 		return (0);
-	a = create_stack_a(argc - 1, argv);
+	a = create_stack_a(argv);
 	b = init_stack(argc - 1);
 	// print_stack(a, b);
 	//printf("is sorted till: %d\n", is_sorted(a));
