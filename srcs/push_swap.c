@@ -10,6 +10,18 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+/* STATS 
+
+nums	: 	max moves
+2			1
+3		:	4
+5		:	10
+10		:	29
+100		:	1655
+500		: 	32446
+
+*/
+
 #include "push_swap.h"
 
 // atoi with overflow detection
@@ -41,6 +53,7 @@ int	ft_atoi_ofd(const char *nptr)
 	return (sign * sum);
 }
 
+// exits from the program after freeing everything and displaying "Error"
 int	exit_err(t_stack *a)
 {
 	free(a->stack);
@@ -49,6 +62,7 @@ int	exit_err(t_stack *a)
 	exit(EXIT_FAILURE);
 }
 
+// um yea literally just parses the args
 char	**parse_args(char **argv, int *count)
 {
 	char	*nums_str;
@@ -72,10 +86,11 @@ char	**parse_args(char **argv, int *count)
 	i = -1;
 	while (nums[++i])
 		;
-	*count = i;
+	*count = i - 1;
 	return (nums);
 }
 
+// creates stack a with the top element at the end of the array 
 t_stack	*create_stack_a(char **argv)
 {
 	t_stack	*a;
@@ -86,8 +101,7 @@ t_stack	*create_stack_a(char **argv)
 
 	nums = parse_args(argv + 1, &count);
 	a = (t_stack *)ft_malloc(sizeof(t_stack));
-	a->stack = (int *)ft_malloc(sizeof(int) * count);
-	count -= 1;
+	a->stack = (int *)ft_malloc(sizeof(int) * (count + 1));
 	i = -1;
 	while (nums[++i])
 	{
@@ -170,8 +184,6 @@ void	sort_stack(t_stack *a, t_stack *b)
 
 	while (a->top > 0)
 	{
-		// if (is_sorted(a) == 0)
-		// 	break ;
 		min = find_min(a);
 		if (a->top - min == 1)
 			sa(a);
