@@ -25,6 +25,8 @@
 # include <limits.h>
 # include "libft.h"
 
+# define CHUNK_SIZE 5
+
 typedef struct s_stack
 {
 	int	*stack;

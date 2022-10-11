@@ -10,18 +10,6 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-/* STATS 
-
-nums	: 	max moves
-2			1
-3		:	4
-5		:	10
-10		:	29
-100		:	1655
-500		: 	32446
-
-*/
-
 #include "push_swap.h"
 
 // atoi with overflow detection
@@ -199,6 +187,19 @@ void	sort_stack(t_stack *a, t_stack *b)
 	}
 	while (b->top != -1)
 		pa(a, b);
+}
+
+void	sort_with_chunks(t_stack *a, t_stack *b)
+{
+	int	i;
+
+	i = a->top + 1;
+	while (--i >= 0)
+	{
+		while (i - a->top < CHUNK_SIZE)
+			pb(a, b);
+		i = a->top
+	}
 }
 
 int	main(int argc, char **argv)

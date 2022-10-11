@@ -1,13 +1,11 @@
 #!/usr/bin/env python3
 
-
 from tkinter import *
 import sys
 import time
 import subprocess
 import os
 from math import sqrt
-
 
 """
 __project__ = "push_swap visualizer"
