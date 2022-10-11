@@ -155,50 +155,99 @@ int	find_min(t_stack *s)
 	return (min_index);
 }
 
-int	is_sorted(t_stack *s)
+// returns the index of the largest element in the stack
+int	find_max(t_stack *s)
+{
+	int	i;
+	int	max_index;
+
+	i = s->top + 1;
+	max_index = s->top;
+	while (--i >= 0)
+		if (s->stack[i] > s->stack[max_index])
+			max_index = i;
+	return (max_index);
+}
+
+int	is_sorted(t_stack *s) 
 {
 	int	i;
 
 	i = s->top + 1;
 	while (--i > 0)
-		if (s->stack[i] > s->stack[i - 1])
+		if (s->stack[i] < s->stack[i - 1]) // for now checks desc order
 			return (i);
 	return (0);
 }
 
-void	sort_stack(t_stack *a, t_stack *b)
+int is_sorted_chunk(t_stack *s, int start)
 {
-	int	min;
+	int	i;
 
-	while (a->top > 0)
-	{
-		min = find_min(a);
-		if (a->top - min == 1)
-			sa(a);
-		else if (min >= a->top / 2)
-			while (++min <= a->top)
-				ra(a);
-		else if (min < a->top / 2)
-			while (--min >= -1)
-				rra(a);
-		if (is_sorted(a) == 0)
-			break ;
-		pb(a, b);
-	}
-	while (b->top != -1)
-		pa(a, b);
+	i = -1;
+	while (++i < CHUNK_SIZE - 1)
+		if (s->stack[start - i] > s->stack[start - i - 1])
+			return (i);
+	return (0);
 }
+
+// void	sort_stack(t_stack *a, t_stack *b)
+// {
+// 	int	min;
+
+// 	while (a->top > 0)
+// 	{
+// 		min = find_min(a);
+// 		if (a->top - min == 1)
+// 			sa(a);
+// 		else if (min >= a->top / 2)
+// 			while (++min <= a->top)
+// 				ra(a);
+// 		else if (min < a->top / 2)
+// 			while (--min >= -1)
+// 				rra(a);
+// 		if (is_sorted(a) == 0)
+// 			break ;
+// 		pb(a, b);
+// 	}
+// 	while (b->top != -1)
+// 		pa(a, b);
+// }
 
 void	sort_with_chunks(t_stack *a, t_stack *b)
 {
 	int	i;
+	int	max;
 
 	i = a->top + 1;
-	while (--i >= 0)
+	while (i >= 0)
 	{
-		while (i - a->top < CHUNK_SIZE)
-			pb(a, b);
-		i = a->top
+		if (is_sorted_chunk(a, a->top) != 0) // chunk not sorted
+			while (i - a->top < CHUNK_SIZE)
+				pb(a, b);
+		i = a->top;
+		while (b->top != -1)
+		{
+			max = find_max(b);
+			if (b->top - max == 1)
+				sb(a);
+			else if (max >= b->top / 2)
+				while (++max <= b->top)
+					rb(b);
+			else if (max < a->top / 2)
+				while (--max >= -1)
+					rrb(b);
+			if (is_sorted(b) == 0)
+			{
+				while (b->top != -1)
+				{
+					pa(a, b);
+					ra(a);
+				}
+				break ;
+			}	
+			pa(a, b);
+		}
 	}
 }
 
