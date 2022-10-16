@@ -40,24 +40,43 @@ int	find_max(t_stack *s)
 	return (max_index);
 }
 
+// finding the index of the mid value of the stack, i.e., the mid index value if the array was sorted 
+// INEFFICIENT O(n^2) - use quick sort approach instead to find mid so average case is O(n)
+int	find_mid(t_stack *s)
+{
+	int	count_bigger;
+	int	count_smaller;
+	int	i;
+	int	j;
+
+	i = -1;
+	
+	while (++i <= s->top)
+	{
+		count_bigger = 0;
+		count_smaller = 0;
+		j = -1;
+		while (++j <= s->top)
+		{
+			if (s->stack[j] > s->stack[i])
+				count_bigger++; 
+			else if (s->stack[j] < s->stack[i])
+				count_smaller++;
+		}
+		printf("%d num: %d, cb = %d, cs = %d\n", i, s->stack[i], count_bigger, count_smaller);
+		if (count_smaller == count_bigger - (s->top & 1)) // (top & 1) will be 0 when stack has odd number of elements
+			break ;										  // (top & 1) will be 1 when stack has even number of elements
+	}
+	return (i);
+}
+
 int	is_sorted(t_stack *s) 
 {
 	int	i;
 
 	i = s->top + 1;
 	while (--i > 0)
-		if (s->stack[i] < s->stack[i - 1]) // for now checks desc order
-			return (i);
-	return (0);
-}
-
-int is_sorted_chunk(t_stack *s, int start)
-{
-	int	i;
-
-	i = -1;
-	while (++i < CHUNK_SIZE - 1)
-		if (s->stack[start - i] > s->stack[start - i - 1])
+		if (s->stack[i] > s->stack[i - 1]) // for now checks asc order
 			return (i);
 	return (0);
 }
@@ -80,46 +99,10 @@ void	sort_stack(t_stack *a, t_stack *b)
 		if (is_sorted(a) == 0)
 			break ;
 		pb(a, b);
+		print_stack(a, b);
 	}
 	while (b->top != -1)
 		pa(a, b);
-}
-
-void	sort_with_chunks(t_stack *a, t_stack *b)
-{
-	int	i;
-	int	max;
-
-	i = a->top + 1;
-	while (i >= 0)
-	{
-		if (is_sorted_chunk(a, a->top) != 0) // chunk not sorted
-			while (i - a->top < CHUNK_SIZE)
-				pb(a, b);
-		i = a->top;
-		while (b->top != -1)
-		{
-			max = find_max(b);
-			if (b->top - max == 1)
-				sb(a);
-			else if (max >= b->top / 2)
-				while (++max <= b->top)
-					rb(b);
-			else if (max < a->top / 2)
-				while (--max >= -1)
-					rrb(b);
-			if (is_sorted(b) == 0)
-			{
-				while (b->top != -1)
-				{
-					pa(a, b);
-					ra(a);
-				}
-				break ;
-			}	
-			pa(a, b);
-		}
-	}
 }
 
 int	main(int argc, char **argv)
@@ -131,12 +114,62 @@ int	main(int argc, char **argv)
 		return (0);
 	a = create_stack_a(argv);
 	b = init_stack(a->top + 1);
-	// print_stack(a, b);
+	print_stack(a, b);
+	int mid = find_mid(a);
+	printf("%d, %d\n", mid, a->stack[mid]);
 	sort_stack(a, b);
-	// print_stack(a, b);
+	print_stack(a, b);
 	free(a->stack);
 	free(a);
 	free(b->stack);
 	free(b);
 	return (0);
 }
+
+// int is_sorted_chunk(t_stack *s, int start)
+// {
+// 	int	i;
+
+// 	i = -1;
+// 	while (++i < CHUNK_SIZE - 1)
+// 		if (s->stack[start - i] > s->stack[start - i - 1])
+// 			return (i);
+// 	return (0);
+// }
+
+
+
+// void	sort_with_chunks(t_stack *a, t_stack *b)
+// {
+// 	int	i;
+// 	int	max;
+
+// 	i = a->top + 1;
+// 	while (i >= 0)
+// 	{
+// 		if (is_sorted_chunk(a, a->top) != 0) // if chunk is not sorted
+// 			while (i - a->top < CHUNK_SIZE)
+// 				pb(a, b);
+// 		i = a->top;
+// 		while (b->top != -1)
+// 		{
+// 			max = find_max(b);
+// 			if (b->top - max == 1)
+// 				sb(a);
+// 			else if (max >= b->top / 2)
+// 				while (++max < b->top)
+// 					rb(b);
+// 			else if (max < b->top / 2)
+// 				while (--max >= -1)
+// 					rrb(b);
+// 			if (is_sorted(b) == 0)
+// 				break ;
+// 			pa(a, b);
+// 		}
+// 		while (b->top != -1)
+// 		{
+// 			pa(a, b);
+// 			ra(a);
+// 		}
+// 	}
+// }
