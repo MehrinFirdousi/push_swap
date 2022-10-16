@@ -33,7 +33,13 @@ typedef struct s_stack
 	int	top;
 }	t_stack;
 
+int		ft_atoi_ofd(const char *nptr);
+int		exit_err(t_stack *a);
+char	**parse_args(char **argv, int *count);
+t_stack	*create_stack_a(char **argv);
+t_stack	*init_stack(int len);
 void	print_stack(t_stack *a, t_stack *b);
+
 void	sa(t_stack *a);
 void	sb(t_stack *a);
 void	pa(t_stack *a, t_stack *b);
