@@ -63,8 +63,8 @@ int	find_mid(t_stack *s)
 			else if (s->stack[j] < s->stack[i])
 				count_smaller++;
 		}
-		printf("%d num: %d, cb = %d, cs = %d\n", i, s->stack[i], count_bigger, count_smaller);
-		if (count_bigger == count_smaller - (s->top & 1)) // try this and see if 
+		// printf("%d num: %d, cb = %d, cs = %d\n", i, s->stack[i], count_bigger, count_smaller);
+		// if (count_bigger == count_smaller - (s->top & 1)) // try this and see if 
 		if (count_smaller == count_bigger - (s->top & 1)) // (top & 1) will be 0 when stack has odd number of elements
 			break ;										  // (top & 1) will be 1 when stack has even number of elements
 	}
@@ -90,20 +90,50 @@ void	push_chunks(t_stack *a, t_stack *b)
 	while (a->top > 1)
 	{
 		mid = find_mid(a);
-		remain = a->top - (a->top / 2) + 1;
-		while (a->top > remain)
+		printf("mid = %d, a[mid] = %d\n", mid, a->stack[mid]);
+		remain = a->top - (a->top / 2) - 1;
+		// if (remain < 1)
+		// 	remain = 1;
+		while (remain > 0 && a->top > remain)
 		{
-			if (a->stack[a->top] < a->stack[mid])
+			if (a->stack[a->top] <= a->stack[mid])
 				pb(a, b);
-			else if (a->stack[0] < a->stack[mid])
+			else if (a->stack[0] <= a->stack[mid])
 			{
 				rra(a);
 				pb(a, b);
 			}
-			else if (a->stack[a->top] >= a->stack[mid])
+			else if (a->stack[a->top] > a->stack[mid])
 				ra(a);
 		}
+		printf("------------\n");
+		print_stack(a, b);
 	}
+	if (a->top > 0 && a->stack[a->top] > a->stack[a->top - 1])
+		sa(a);
+}
+
+void	sort_stack(t_stack *a, t_stack *b)
+{
+	int	min;
+
+	while (a->top > 0)
+	{
+		min = find_min(a);
+		if (a->top - min == 1)
+			sa(a);
+		else if (min >= a->top / 2)
+			while (++min <= a->top)
+				ra(a);
+		else if (min < a->top / 2)
+			while (--min >= -1)
+				rra(a);
+		if (is_sorted(a) == 0)
+			break ;
+		pb(a, b);
+	}
+	while (b->top != -1)
+		pa(a, b);
 }
 
 int	main(int argc, char **argv)
@@ -116,9 +146,9 @@ int	main(int argc, char **argv)
 	a = create_stack_a(argv);
 	b = init_stack(a->top + 1);
 	print_stack(a, b);
-	int mid = find_mid(a);
-	printf("%d, %d\n", mid, a->stack[mid]);
-	sort_stack(a, b);
+
+	push_chunks(a, b);
+	// sort_stack(a, b);
 	print_stack(a, b);
 	free(a->stack);
 	free(a);
@@ -173,25 +203,3 @@ int	main(int argc, char **argv)
 // 	}
 // }
 
-// void	sort_stack(t_stack *a, t_stack *b)
-// {
-// 	int	min;
-
-// 	while (a->top > 0)
-// 	{
-// 		min = find_min(a);
-// 		if (a->top - min == 1)
-// 			sa(a);
-// 		else if (min >= a->top / 2)
-// 			while (++min <= a->top)
-// 				ra(a);
-// 		else if (min < a->top / 2)
-// 			while (--min >= -1)
-// 				rra(a);
-// 		if (is_sorted(a) == 0)
-// 			break ;
-// 		pb(a, b);
-// 	}
-// 	while (b->top != -1)
-// 		pa(a, b);
-// }
