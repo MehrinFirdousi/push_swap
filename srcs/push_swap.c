@@ -64,6 +64,7 @@ int	find_mid(t_stack *s)
 				count_smaller++;
 		}
 		printf("%d num: %d, cb = %d, cs = %d\n", i, s->stack[i], count_bigger, count_smaller);
+		if (count_bigger == count_smaller - (s->top & 1)) // try this and see if 
 		if (count_smaller == count_bigger - (s->top & 1)) // (top & 1) will be 0 when stack has odd number of elements
 			break ;										  // (top & 1) will be 1 when stack has even number of elements
 	}
@@ -81,28 +82,28 @@ int	is_sorted(t_stack *s)
 	return (0);
 }
 
-void	sort_stack(t_stack *a, t_stack *b)
+void	push_chunks(t_stack *a, t_stack *b)
 {
-	int	min;
+	int	mid;
+	int	remain;
 
-	while (a->top > 0)
+	while (a->top > 1)
 	{
-		min = find_min(a);
-		if (a->top - min == 1)
-			sa(a);
-		else if (min >= a->top / 2)
-			while (++min <= a->top)
-				ra(a);
-		else if (min < a->top / 2)
-			while (--min >= -1)
+		mid = find_mid(a);
+		remain = a->top - (a->top / 2) + 1;
+		while (a->top > remain)
+		{
+			if (a->stack[a->top] < a->stack[mid])
+				pb(a, b);
+			else if (a->stack[0] < a->stack[mid])
+			{
 				rra(a);
-		if (is_sorted(a) == 0)
-			break ;
-		pb(a, b);
-		print_stack(a, b);
+				pb(a, b);
+			}
+			else if (a->stack[a->top] >= a->stack[mid])
+				ra(a);
+		}
 	}
-	while (b->top != -1)
-		pa(a, b);
 }
 
 int	main(int argc, char **argv)
@@ -137,8 +138,6 @@ int	main(int argc, char **argv)
 // 	return (0);
 // }
 
-
-
 // void	sort_with_chunks(t_stack *a, t_stack *b)
 // {
 // 	int	i;
@@ -172,4 +171,27 @@ int	main(int argc, char **argv)
 // 			ra(a);
 // 		}
 // 	}
+// }
+
+// void	sort_stack(t_stack *a, t_stack *b)
+// {
+// 	int	min;
+
+// 	while (a->top > 0)
+// 	{
+// 		min = find_min(a);
+// 		if (a->top - min == 1)
+// 			sa(a);
+// 		else if (min >= a->top / 2)
+// 			while (++min <= a->top)
+// 				ra(a);
+// 		else if (min < a->top / 2)
+// 			while (--min >= -1)
+// 				rra(a);
+// 		if (is_sorted(a) == 0)
+// 			break ;
+// 		pb(a, b);
+// 	}
+// 	while (b->top != -1)
+// 		pa(a, b);
 // }
