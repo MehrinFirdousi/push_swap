@@ -68,7 +68,7 @@ int	find_mid(t_stack *s)
 		if (count_smaller == count_bigger - (s->top & 1)) // (top & 1) will be 0 when stack has odd number of elements
 			break ;										  // (top & 1) will be 1 when stack has even number of elements
 	}
-	return (i);
+	return (s->stack[i]);
 }
 
 int	is_sorted(t_stack *s) 
@@ -82,6 +82,17 @@ int	is_sorted(t_stack *s)
 	return (0);
 }
 
+int	is_sorted_desc(t_stack *s) 
+{
+	int	i;
+
+	i = s->top + 1;
+	while (--i > 0)
+		if (s->stack[i] < s->stack[i - 1]) // for now checks desc order
+			return (i);
+	return (0);
+}
+
 void	push_chunks(t_stack *a, t_stack *b)
 {
 	int	mid;
@@ -90,24 +101,21 @@ void	push_chunks(t_stack *a, t_stack *b)
 	while (a->top > 1)
 	{
 		mid = find_mid(a);
-		printf("mid = %d, a[mid] = %d\n", mid, a->stack[mid]);
 		remain = a->top - (a->top / 2) - 1;
-		// if (remain < 1)
-		// 	remain = 1;
-		while (remain > 0 && a->top > remain)
+		if (remain < 1) 
+			remain = 1;
+		while (a->top > remain)
 		{
-			if (a->stack[a->top] <= a->stack[mid])
+			if (a->stack[a->top] <= mid)
 				pb(a, b);
-			else if (a->stack[0] <= a->stack[mid])
+			else if (a->stack[0] <= mid)
 			{
 				rra(a);
 				pb(a, b);
 			}
-			else if (a->stack[a->top] > a->stack[mid])
+			else if (a->stack[a->top] > mid)
 				ra(a);
 		}
-		printf("------------\n");
-		print_stack(a, b);
 	}
 	if (a->top > 0 && a->stack[a->top] > a->stack[a->top - 1])
 		sa(a);
@@ -136,6 +144,29 @@ void	sort_stack(t_stack *a, t_stack *b)
 		pa(a, b);
 }
 
+void	sort_stack_desc(t_stack *a, t_stack *b)
+{
+	int	max;
+
+	while (b->top > 0)
+	{
+		max = find_max(b);
+		if (b->top - max == 1)
+			sb(b);
+		else if (max >= b->top / 2)
+			while (++max <= b->top)
+				rb(b);
+		else if (max < b->top / 2)
+			while (--max >= -1)
+				rrb(b);
+		if (is_sorted(b) == 0)
+			break ;
+		pa(a, b);
+	}
+	while (b->top != -1)
+		pa(a, b);
+}
+
 int	main(int argc, char **argv)
 {
 	t_stack	*a;
@@ -145,11 +176,11 @@ int	main(int argc, char **argv)
 		return (0);
 	a = create_stack_a(argv);
 	b = init_stack(a->top + 1);
-	print_stack(a, b);
+	// print_stack(a, b);
 
 	push_chunks(a, b);
-	// sort_stack(a, b);
-	print_stack(a, b);
+	sort_stack_desc(a, b);
+	// print_stack(a, b);
 	free(a->stack);
 	free(a);
 	free(b->stack);

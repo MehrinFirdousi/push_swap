@@ -127,6 +127,7 @@ void	print_stack(t_stack *a, t_stack *b)
 	top_a = (!a? -1 : a->top);
 	top_b = (!b? -1 : b->top);
 	i = (top_a >= top_b? top_a : top_b) + 1;
+	printf("-----------------\n");
 	while (--i >= 0)
 	{
 		printf("%d\t", i);
