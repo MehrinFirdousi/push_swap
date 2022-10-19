@@ -50,7 +50,7 @@ int	exit_err(t_stack *a)
 	exit(EXIT_FAILURE);
 }
 
-// um yea literally just parses the args
+// literally just parses the args
 char	**parse_args(char **argv, int *count)
 {
 	char	*nums_str;

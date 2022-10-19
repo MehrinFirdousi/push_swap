@@ -51,7 +51,7 @@ int rand_r (unsigned int *seed)
   return result;
 }
 /* change this to get size you want */
-#define ARRSIZE 100
+#define ARRSIZE 500
  
 /* use 32 bit extended rand function rand_r */
 int main(int argc, char *argv[])
