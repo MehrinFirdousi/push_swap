@@ -42,31 +42,31 @@ int	find_max(t_stack *s)
 
 // finding the index of the mid value of the stack, i.e., the mid index value if the array was sorted 
 // INEFFICIENT O(n^2) - use quick sort approach instead to find mid so average case is O(n)
-int	find_mid(t_stack *s, int start)
+int	find_mid(t_stack *s, int chunk_size)
 {
 	int	count_bigger;
 	int	count_smaller;
 	int	i;
 	int	j;
 
-	i = -1;
-	
-	while (++i <= s->top)
+	i = s->top;
+	while (i >= chunk_size)
 	{
 		count_bigger = 0;
 		count_smaller = 0;
-		j = start - 1;
-		while (++j <= s->top)
+		j = s->top;
+		while (j >= chunk_size)
 		{
 			if (s->stack[j] > s->stack[i])
 				count_bigger++; 
 			else if (s->stack[j] < s->stack[i])
 				count_smaller++;
+			j--;
 		}
 		// printf("%d num: %d, cb = %d, cs = %d\n", i, s->stack[i], count_bigger, count_smaller);
-		// if (count_smaller == count_bigger - (s->top & 1))  
-		if (count_bigger == count_smaller - (s->top & 1)) // (top & 1) will be 0 when stack has odd number of elements
+		if (count_bigger == count_smaller - ((s->top - chunk_size) & 1)) // (top & 1) will be 0 when stack has odd number of elements
 			break ;										  // (top & 1) will be 1 when stack has even number of elements
+		i--;
 	}
 	return (s->stack[i]);
 }
@@ -104,7 +104,7 @@ void	push_chunks_ab(t_stack *a, t_stack *b)
 		mid = find_mid(a, 0);
 		remain = a->top / 2;
 		chunk_size = a->top - remain;
-		printf("chunk_size = %d\n", chunk_size);
+		printf("mid = %d, chunk_size = %d\n", mid, chunk_size);
 		while (a->top > remain)
 		{
 			if (a->stack[a->top] < mid)
@@ -117,18 +117,29 @@ void	push_chunks_ab(t_stack *a, t_stack *b)
 			else if (a->stack[a->top] >= mid)
 				ra(a);
 		}
+		// print_stack(a, b);
 	}
 	if (a->top > 0 && a->stack[a->top] > a->stack[a->top - 1])
 		sa(a);
 }
 
-void	push_chunks_ba(t_stack *a, t_stack *b, )
+void	push_chunks_ba(t_stack *a, t_stack *b, int old_top) // when calling, must call with  (a->top + b->top + 1) as chunk_size
 {
-	int	total;
+	int	chunk_size;
 	int	mid;
+	int i;
 
-	total = a->top + b->top + 2;
-	mid = find_mid(b, 0);
+	if (old_top > 1)
+	{
+		chunk_size = old_top - old_top / 2;
+		mid = find_mid(b, chunk_size - 1);
+		push_chunks_ba(a, b, old_top / 2);
+		printf("oldtop = %d, mid = %d, chunk_size = %d\n", old_top, mid, chunk_size);
+	}
+	else
+	{
+		// while ()
+	}
 }
 
 void	sort_stack(t_stack *a, t_stack *b)
@@ -186,9 +197,12 @@ int	main(int argc, char **argv)
 		return (0);
 	a = create_stack_a(argv);
 	b = init_stack(a->top + 1);
-	// print_stack(a, b);
+	print_stack(a, b);
+	printf("mid = %d\n", find_mid(a, 0));
 	push_chunks_ab(a, b);
 	// sort_stack_desc(a, b);
+	push_chunks_ba(a, b, a->top + b->top + 1);
+	// sort_stack(a, b);
 	print_stack(a, b);
 	free(a->stack);
 	free(a);

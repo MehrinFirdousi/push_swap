@@ -1,0 +1,54 @@
+pb
+rra
+pb
+ra
+pb
+ra
+pb
+pb
+ra
+pb
+ra
+ra
+pb
+pb
+pb
+rra
+pb
+-----------------
+11	-1	
+10	0	
+9	-5	
+8	1	
+7	-6	
+6	-2	
+5	4	
+4	-3	
+3	5	
+2	3	
+1	2	
+0	-4	
+_	_	_
+i	a	b
+-----------------
+mid = 0
+mid = 0, chunk_size = 6
+mid = 3, chunk_size = 3
+mid = 4, chunk_size = 1
+oldtop = 2, mid = -1, chunk_size = 1
+oldtop = 5, mid = 0, chunk_size = 3
+oldtop = 11, mid = 1, chunk_size = 6
+-----------------
+9		3
+8		1
+7		0
+6		2
+5		-3
+4		-2
+3		-6
+2		-5
+1	4	-4
+0	5	-1
+_	_	_
+i	a	b
+-----------------
