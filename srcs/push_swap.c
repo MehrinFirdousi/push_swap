@@ -152,10 +152,6 @@ void	push_chunks_ba(t_stack *a, t_stack *b, int old_top) // when calling, must c
 		// 	while (b->stack[b->top] > a->stack[i])
 		// }
 	}
-	else
-	{
-		// while ()
-	}
 }
 
 void	sort_stack(t_stack *a, t_stack *b)
