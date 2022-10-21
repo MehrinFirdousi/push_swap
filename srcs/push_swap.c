@@ -136,10 +136,6 @@ void	push_chunks_ba(t_stack *a, t_stack *b, int old_top) // when calling, must c
 		push_chunks_ba(a, b, old_top / 2);
 		printf("oldtop = %d, mid = %d, chunk_size = %d\n", old_top, mid, chunk_size);
 	}
-	else
-	{
-		// while ()
-	}
 }
 
 void	sort_stack(t_stack *a, t_stack *b)
