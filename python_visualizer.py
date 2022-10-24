@@ -23,6 +23,8 @@ You can change the PUSHS_PATH to get to the relative path of your push_swap
 You can decrease or increase the speed with the matching buttons.
 """
 
+os.system("Xvfb :2 -screen 0 720x720x16 &")
+os.environ['DISPLAY'] = ":2.0"
 
 RELATIVE_PATH = r'push_swap'
 

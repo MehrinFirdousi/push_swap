@@ -89,7 +89,7 @@ int	is_sorted_desc(t_stack *s)
 	i = s->top + 1;
 	while (--i > 0)
 		if (s->stack[i] < s->stack[i - 1]) // for now checks desc order
-			return (i);
+			return (i); 
 	return (0);
 }
 
@@ -105,6 +105,7 @@ void	push_chunks_ab(t_stack *a, t_stack *b)
 		remain = a->top / 2;
 		chunk_size = a->top - remain;
 		// printf("mid = %d, chunk_size = %d\n", mid, chunk_size);
+		(void)chunk_size;
 		while (a->top > remain)
 		{
 			if (a->stack[a->top] < mid)
@@ -126,9 +127,8 @@ void	push_chunks_ab(t_stack *a, t_stack *b)
 void	push_chunks_ba(t_stack *a, t_stack *b, int old_top) // when calling, must call with  (a->top + b->top + 1) as chunk_size
 {
 	int	chunk_size;
-	// int count_top;
-	// int count_bottom;
-	// int i;
+	int count_top;
+	int count_bottom;
 	int	mid;
 
 	if (old_top > 1)
@@ -137,20 +137,29 @@ void	push_chunks_ba(t_stack *a, t_stack *b, int old_top) // when calling, must c
 		mid = find_mid(b, chunk_size - 1);
 		push_chunks_ba(a, b, old_top / 2);
 		printf("oldtop = %d, mid = %d, chunk_size = %d\n", old_top, mid, chunk_size);
-		// while (b->top > chunk_size)
-		// {
-		// 	if (b->stack[b->top] > mid)
-		// 		pa(a, b);
-		// 	else if (b->stack[chunk_size - 1] > mid)
-		// 		;
-		// }
-		// count_top = 0;
-		// count_bottom = 0;
-		// i = a->top;
-		// while (--chunk_size >= 0)
-		// {
-		// 	while (b->stack[b->top] > a->stack[i])
-		// }
+		count_top = chunk_size;
+		count_bottom = 0;
+		while (count_top + count_bottom > 0)
+		{
+			if (count_top > 0 && b->stack[b->top] > mid)
+			{
+				pa(a, b);
+				if (a->stack[a->top] > a->stack[a->top - 1]) // search for pa sa in output file 
+					sa(a);
+				count_top--;
+			}
+			else if (count_bottom > 0 && b->stack[0] > mid)
+			{
+				rrb(b);
+				pa(a, b);
+				count_bottom--;
+			}
+			else if (b->stack[b->top] <= mid)
+			{
+				rb(b);
+				count_bottom++;
+			}
+		}
 	}
 }
 
@@ -180,8 +189,10 @@ void	sort_stack(t_stack *a, t_stack *b)
 void	sort_stack_desc(t_stack *a, t_stack *b)
 {
 	int	max;
+	int	half;
 
-	while (b->top > 0)
+	half = (b->top + a->top) / 2;
+	while (b->top > half)
 	{
 		max = find_max(b);
 		if (b->top - max == 1)
@@ -196,7 +207,7 @@ void	sort_stack_desc(t_stack *a, t_stack *b)
 			break ;
 		pa(a, b);
 	}
-	while (b->top != -1)
+	while (b->top > half)
 		pa(a, b);
 }
 
@@ -209,11 +220,13 @@ int	main(int argc, char **argv)
 		return (0);
 	a = create_stack_a(argv);
 	b = init_stack(a->top + 1);
-	// print_stack(a, b);
 	push_chunks_ab(a, b);
+	// print_stack(a, b);
+
 	// push_chunks_ba(a, b, a->top + b->top + 1);
-	// sort_stack_desc(a, b);
-	// sort_stack(a, b);
+	sort_stack_desc(a, b);
+	// print_stack(a, b);
+	printf("is sorted = %d\n", is_sorted(a));
 	free(a->stack);
 	free(a);
 	free(b->stack);
@@ -265,5 +278,30 @@ int	main(int argc, char **argv)
 // 			ra(a);
 // 		}
 // 	}
+// }
+
+
+// ********************* does full sort in desc *************
+// void	sort_stack_desc(t_stack *a, t_stack *b)
+// {
+// 	int	max;
+
+// 	while (b->top > 0)
+// 	{
+// 		max = find_max(b);
+// 		if (b->top - max == 1)
+// 			sb(b);
+// 		else if (max >= b->top / 2)
+// 			while (++max <= b->top)
+// 				rb(b);
+// 		else if (max < b->top / 2)
+// 			while (--max >= -1)
+// 				rrb(b);
+// 		if (is_sorted(b) == 0)
+// 			break ;
+// 		pa(a, b);
+// 	}
+// 	while (b->top != -1)
+// 		pa(a, b);
 // }
 
