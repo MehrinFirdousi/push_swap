@@ -71,6 +71,7 @@ int	find_mid(t_stack *s, int chunk_size)
 	return (s->stack[i]);
 }
 
+// returns the index of element till where it is sorted
 int	is_sorted(t_stack *s) 
 {
 	int	i;
@@ -80,6 +81,14 @@ int	is_sorted(t_stack *s)
 		if (s->stack[i] > s->stack[i - 1]) // for now checks asc order
 			return (i);
 	return (0);
+}
+
+int check_sorted_from(t_stack *s, int i)
+{
+	while (++i <= s->top)
+		if (s->stack[i] > s->stack[i - 1])
+			return (i);
+	return (i);
 }
 
 int	is_sorted_desc(t_stack *s) 
@@ -93,18 +102,18 @@ int	is_sorted_desc(t_stack *s)
 	return (0);
 }
 
-void	push_chunks_ab(t_stack *a, t_stack *b)
+void	push_chunks_ab(t_stack *a, t_stack *b, int chunk_end) // chunk_end is the end index of the chunk we're pushing
 {
 	int	mid;
 	int	remain;
 	int chunk_size;
 
-	while (a->top > 1)
+	while (a->top > chunk_end + 1)
 	{
 		mid = find_mid(a, 0);
 		remain = a->top / 2;
 		chunk_size = a->top - remain;
-		// printf("mid = %d, chunk_size = %d\n", mid, chunk_size);
+		printf("mid = %d, chunk_size = %d\n", mid, chunk_size);
 		(void)chunk_size;
 		while (a->top > remain)
 		{
@@ -118,48 +127,41 @@ void	push_chunks_ab(t_stack *a, t_stack *b)
 			else if (a->stack[a->top] >= mid)
 				ra(a);
 		}
-		// print_stack(a, b);
 	}
 	if (a->top > 0 && a->stack[a->top] > a->stack[a->top - 1])
 		sa(a);
 }
 
-void	push_chunks_ba(t_stack *a, t_stack *b, int old_top) // when calling, must call with  (a->top + b->top + 1) as chunk_size
+void	push_chunks_ba(t_stack *a, t_stack *b, int old_top)
 {
-	int	chunk_size;
-	int count_top;
-	int count_bottom;
-	int	mid;
+	int chunk_size;
+	int mid;
+	int remain;
+	int i;
 
 	if (old_top > 1)
 	{
 		chunk_size = old_top - old_top / 2;
-		mid = find_mid(b, chunk_size - 1);
 		push_chunks_ba(a, b, old_top / 2);
-		printf("oldtop = %d, mid = %d, chunk_size = %d\n", old_top, mid, chunk_size);
-		count_top = chunk_size;
-		count_bottom = 0;
-		while (count_top + count_bottom > 0)
+		remain = b->top - chunk_size / 2;
+		mid = find_mid(b, chunk_size);
+		printf("remain = %d\n", remain);
+		i = 0;
+		while ()
+		while (b->top > remain && i < 100)
 		{
-			if (count_top > 0 && b->stack[b->top] > mid)
+			if (b->stack[b->top] > mid)
 			{
 				pa(a, b);
-				if (a->stack[a->top] > a->stack[a->top - 1]) // search for pa sa in output file 
+				if (a->stack[a->top] > a->stack[a->top - 1]) // search for pa sa in output file to see if this was ever useful
 					sa(a);
-				count_top--;
 			}
-			else if (count_bottom > 0 && b->stack[0] > mid)
-			{
-				rrb(b);
-				pa(a, b);
-				count_bottom--;
-			}
-			else if (b->stack[b->top] <= mid)
-			{
+			else
 				rb(b);
-				count_bottom++;
-			}
+			printf("btop = %d\n", b->top);
+			i++;
 		}
+		push_chunks_ab(a, b, check_sorted_from(a, a->top - chunk_size / 2));
 	}
 }
 
@@ -220,13 +222,13 @@ int	main(int argc, char **argv)
 		return (0);
 	a = create_stack_a(argv);
 	b = init_stack(a->top + 1);
-	push_chunks_ab(a, b);
+	push_chunks_ab(a, b, 0);
 	// print_stack(a, b);
 
-	// push_chunks_ba(a, b, a->top + b->top + 1);
-	sort_stack_desc(a, b);
+	push_chunks_ba(a, b, a->top + b->top + 1);
+	// sort_stack_desc(a, b);
 	// print_stack(a, b);
-	printf("is sorted = %d\n", is_sorted(a));
+	// printf("is sorted = %d\n", is_sorted(a));
 	free(a->stack);
 	free(a);
 	free(b->stack);

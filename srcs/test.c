@@ -71,3 +71,42 @@ int	main(int argc, char **argv)
 	free(b);
 	return (0);
 }
+
+void	push_chunks_ba(t_stack *a, t_stack *b, int old_top) // when calling, must call with  (a->top + b->top + 1) as chunk_size
+{
+	int	chunk_size;
+	int count_top;
+	int count_bottom;
+	int	mid;
+
+	if (old_top > 1)
+	{
+		chunk_size = old_top - old_top / 2;
+		mid = find_mid(b, chunk_size - 1);
+		push_chunks_ba(a, b, old_top / 2);
+		printf("oldtop = %d, mid = %d, chunk_size = %d\n", old_top, mid, chunk_size);
+		count_top = chunk_size;
+		count_bottom = 0;
+		while (count_top + count_bottom > 0)
+		{
+			if (count_top > 0 && b->stack[b->top] > mid)
+			{
+				pa(a, b);
+				if (a->stack[a->top] > a->stack[a->top - 1]) // search for pa sa in output file 
+					sa(a);
+				count_top--;
+			}
+			else if (count_bottom > 0 && b->stack[0] > mid)
+			{
+				rrb(b);
+				pa(a, b);
+				count_bottom--;
+			}
+			else if (count_top > 0 && b->stack[b->top] <= mid)
+			{
+				rb(b);
+				count_bottom++;
+			}
+		}
+	}
+}
