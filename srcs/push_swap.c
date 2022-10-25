@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "push_swap.h"
+// optimization idea - when doing rb if b[top] <= mid, only rb if an upcoming element requires a pb, which would need it to be at the top
 
 // returns the index of the smallest element in the stack
 int	find_min(t_stack *s)
@@ -147,7 +148,6 @@ void	push_chunks_ba(t_stack *a, t_stack *b, int old_top)
 		mid = find_mid(b, chunk_size);
 		printf("remain = %d\n", remain);
 		i = 0;
-		while ()
 		while (b->top > remain && i < 100)
 		{
 			if (b->stack[b->top] > mid)
@@ -162,6 +162,11 @@ void	push_chunks_ba(t_stack *a, t_stack *b, int old_top)
 			i++;
 		}
 		push_chunks_ab(a, b, check_sorted_from(a, a->top - chunk_size / 2));
+		i = 0;
+		while (i < chunk_size - chunk_size / 2)
+		{
+			if (b->stack[0] )
+		}
 	}
 }
 
