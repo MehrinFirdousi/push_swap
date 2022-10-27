@@ -13,6 +13,15 @@
 #include "push_swap.h"
 // optimization idea - when doing rb if b[top] <= mid, only rb if an upcoming element requires a pb, which would need it to be at the top
 
+/**
+ * @brief TODO
+ * 
+ * 1. make push_chunk_a return the number of elements pushed to b
+ * 2. change param of push_chunk_a to chunk_size itself instead
+ * 
+ * 
+ *  
+ */
 // returns the index of the smallest element in the stack
 int	find_min(t_stack *s)
 {
