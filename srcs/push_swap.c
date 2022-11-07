@@ -13,8 +13,6 @@
 #include "push_swap.h"
 // optimization idea - when doing rb if b[top] <= mid, only rb if an upcoming element requires a pb, which would need it to be at the top
 
-int count = 0;
-
 // returns the index of the smallest element in the stack
 int	find_min(t_stack *s)
 {
@@ -44,7 +42,8 @@ int	find_max(t_stack *s)
 }
 
 // finding the index of the mid value of the stack, i.e., the mid index value if the array was sorted 
-// INEFFICIENT O(n^2) - use quick sort approach instead to find mid so average case is O(n)
+// INEFFICIENT O(n^2) - use quick select approach instead to find mid so average case is O(n)
+// or find average of min and max element and use it as a measure
 int	find_mid(t_stack *s, int start, int end, int asc)
 {
 	int	count_bigger;
@@ -94,7 +93,7 @@ int	is_sorted(t_stack *s)
 	return (0);
 }
 
-// returns the index of the element from where the list is unsorted till the top
+// returns the count of unsorted elements from the top 
 int check_sorted_from(t_stack *s, int i)
 {
     while (++i <= s->top)
@@ -120,15 +119,11 @@ void	push_chunks_ab(t_stack *a, t_stack *b, int chunk_end) // chunk_end is the e
 {
 	int	mid;
 	int	remain;
-	int chunk_size;
 	
 	while (a->top > chunk_end + 1)
 	{
 		mid = find_mid(a, a->top, chunk_end, 1);
 		remain = (a->top + chunk_end) / 2;
-		chunk_size = a->top - remain;
-		printf("mid = %d, chunk_size = %d\n", mid, chunk_size);
-		(void)chunk_size;
 		while (a->top > remain)
 		{
 			if (a->stack[a->top] < mid)
@@ -191,54 +186,45 @@ int	push_chunk_a(t_stack *a, t_stack* b, int chunk_size)
 	return (count_pushed);
 }
 
-// b to a
-int	push_chunk_b(t_stack *a, t_stack *b, int chunk_size)
+// pushes top chunk from b to a 
+void	push_chunk_b(t_stack *a, t_stack *b, int chunk_size)
 {
-	int count_pushed;
 	int	remain;
 	int	mid;
-	int top;
+	int	count_rotated;
+	int	last_chunk_size;
+	int old_top;
 
-	top = 1;
-	count_pushed = chunk_size;
-	
+	count_rotated = 0;
+	old_top =  a->top + b->top + 1;
+	last_chunk_size =  old_top - old_top / 2;
 	while (chunk_size > 1)
 	{
-		if (top)
+		remain = b->top - chunk_size / 2;
+		mid = find_mid(b, b->top, b->top - chunk_size + 1, 0);
+		while (b->top > remain)
 		{
-			remain = b->top - chunk_size / 2;
-			mid = find_mid(b, b->top, b->top - chunk_size + 1, 0);
-			while (b->top > remain)
+			if (b->stack[b->top] > mid)
 			{
-				if (b->stack[b->top] > mid)
-				{
-					pa(a, b);
-					if (a->stack[a->top] > a->stack[a->top - 1]) // search for pa sa in output file to see if this was ever useful
-						sa(a);
-					count++;
-				}	
-				else
-					rb(b);
+				pa(a, b);
+				if (a->stack[a->top] > a->stack[a->top - 1]) // search for pa sa in output file to see if this was ever useful
+					sa(a);
 			}
-			top = 0;
-		}
-		else
-		{
-			remain = b->top - chunk_size / 2;
-			mid = find_mid(b, chunk_size - 1, 0, 0);
-			while (b->top > remain)
+			// if (b->stack[0] > mid)
+			// {
+			// 	rrb(b);
+			// 	pa(a, b);
+			// }
+			else
 			{
+				rb(b);
+				count_rotated++;
+			}
+		}
+		if (b->top >= last_chunk_size)
+			while (--count_rotated >= 0)
 				rrb(b);
-				if (b->stack[b->top] > mid)
-				{
-					pa(a, b);
-					if (a->stack[a->top] > a->stack[a->top - 1]) // search for pa sa in output file to see if this was ever useful
-						sa(a);
-					count++;
-				}
-			}
-			top = 1;
-		}
+		count_rotated = 0;
 		chunk_size = chunk_size - chunk_size / 2;
 	}
 	if (chunk_size == 1)
@@ -246,49 +232,47 @@ int	push_chunk_b(t_stack *a, t_stack *b, int chunk_size)
 		pa(a, b);
 		if (a->stack[a->top] > a->stack[a->top - 1]) // search for pa sa in output file to see if this was ever useful
 			sa(a);
-		count++;
-	}	
-	if (b->top > 0 && b->stack[b->top] < b->stack[b->top - 1])
-		sb(b);
-	return (count_pushed);
+	}
 }
 
 void	push_chunks_ba(t_stack *a, t_stack *b, int old_top)
 {
 	int chunk_size;
-	int count_unsorted;
-    int mid;
-    int remain;
-    int i;
+	// int count_unsorted;
+    // int mid;
+    // int remain;
+    // int i;
 
 	if (old_top > 1)
     {
         chunk_size = old_top - old_top / 2;
         push_chunks_ba(a, b, old_top / 2);
-        remain = b->top - chunk_size / 2;
-        mid = find_mid(b, 0, chunk_size, 0);
-        i = 0;
-        while (b->top > remain && i < 100)
-        {
-            if (b->stack[b->top] > mid)
-            {
-                pa(a, b);
-                if (a->stack[a->top] > a->stack[a->top - 1]) // search for pa sa in output file to see if this was ever useful
-                    sa(a);
-            }
-            else
-                rb(b);
-            i++;
-        }
-        count_unsorted = check_sorted_from(a, a->top - chunk_size / 2);
-		//push_chunk_a(a, b, count_unsorted);
-		i = -1;
-        while (count_unsorted > 0 && ++i < 100)
-        {
-            count_unsorted = push_chunk_a(a, b, count_unsorted); // pushes 1 chunk from a to b
-            count_unsorted = push_chunk_b(a, b, count_unsorted); // pushes that chunk back to a
-            count_unsorted = check_sorted_from(a, a->top - count_unsorted);
-		}
+		// printf("chunk_size = %d\n", chunk_size);
+        // remain = b->top - chunk_size / 2;
+        // mid = find_mid(b, 0, chunk_size, 0);
+		push_chunk_b(a, b, chunk_size);
+        // i = 0;
+        // while (b->top > remain && i < 100)
+        // {
+        //     if (b->stack[b->top] > mid)
+        //     {
+        //         pa(a, b);
+        //         if (a->stack[a->top] > a->stack[a->top - 1]) // search for pa sa in output file to see if this was ever useful
+        //             sa(a);
+        //     }
+        //     else
+        //         rb(b);
+        //     i++;
+        // }
+        // count_unsorted = check_sorted_from(a, a->top - chunk_size / 2);
+		// //push_chunk_a(a, b, count_unsorted);
+		// i = -1;
+        // while (count_unsorted > 0 && ++i < 100)
+        // {
+        //     count_unsorted = push_chunk_a(a, b, count_unsorted); // pushes 1 chunk from a to b
+        //     count_unsorted = push_chunk_b(a, b, count_unsorted); // pushes that chunk back to a
+        //     count_unsorted = check_sorted_from(a, a->top - count_unsorted);
+		// }
 	}
 }
 
@@ -350,13 +334,11 @@ int	main(int argc, char **argv)
 	a = create_stack_a(argv);
 	b = init_stack(a->top + 1);
 	
+	// for (int i = a->top; i >= 0; i--)
+	// 	printf("%d ", a->stack[i]);
+
 	push_chunks_ab(a, b, 0);
-	push_chunk_b(a, b, 1);
-	push_chunk_b(a, b, 3);
-	push_chunk_b(a, b, 5);
-	push_chunk_b(a, b, 11);
-	// push_chunks_ba(a, b, a->top + b->top + 1);
-	printf("pa count = %d\n", count);
+	push_chunks_ba(a, b, a->top + b->top + 1);
 	free(a->stack);
 	free(a);
 	free(b->stack);
