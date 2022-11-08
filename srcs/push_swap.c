@@ -348,7 +348,7 @@ int	main(int argc, char **argv)
 	
 	for (int i = a->top; i >= 0; i--)
 		printf("%d ", a->stack[i]);
-	printf("\n");
+	// printf("\n");
 	push_chunks_ab(a, b, 0);
 	push_chunks_ba(a, b, a->top + b->top + 1);
 	printf("is_sorted?  %d\n", is_sorted(a));
