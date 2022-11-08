@@ -11,7 +11,15 @@
 /* ************************************************************************** */
 
 #include "push_swap.h"
-// optimization idea - when doing rb if b[top] <= mid, only rb if an upcoming element requires a pb, which would need it to be at the top
+
+/**
+ * @todo
+ * 
+ * optimization ideas - 
+ * 		when doing rb if b[top] <= mid, only rb if an upcoming element requires a pb, which would need it to be at the top
+ * 		check for unsorted elements in a as soon has half of a chunk is pushed
+ * 		when pushing to b for the first time, only push unsorted elements from the top because sometimes the bottom of the stack may already be sorted
+ */
 
 // returns the index of the smallest element in the stack
 int	find_min(t_stack *s)
@@ -58,12 +66,16 @@ int	find_mid(t_stack *s, int start, int end, int asc)
 	int	i;
 	int	j;
 
+	// printf("start = %d, end = %d\nnums: ", start, end);
+	// for (int i = start; i >= end; i--)
+	// 	printf("%d, ", s->stack[i]);
+	// printf("\n");
 	i = start;
 	while (i >= end)
 	{
 		count_bigger = 0;
 		count_smaller = 0;
-		j = start;
+		j = start;	
 		while (j >= end)
 		{
 			if (s->stack[j] > s->stack[i])
@@ -147,7 +159,8 @@ void	push_chunks_ab(t_stack *a, t_stack *b, int chunk_end) // chunk_end is the e
 	if (a->top > 0 && a->stack[a->top] > a->stack[a->top - 1])
 		sa(a);
 }
-   
+
+// pushing one chunk from a to b
 int	push_chunk_a(t_stack *a, t_stack* b, int chunk_size)
 {
 	int count_pushed;
@@ -158,14 +171,20 @@ int	push_chunk_a(t_stack *a, t_stack* b, int chunk_size)
 	count_pushed = 0;
 	if (chunk_size > 2)
 		count_pushed = chunk_size - 2;
-	while (chunk_size > 2)
+	count_rotated = 0;
+	while (chunk_size > 1)
 	{
 		remain = a->top - chunk_size / 2;
 		mid = find_mid(a, a->top, a->top - chunk_size + 1, 1);
+		// printf("chunk_size in a = %d, mid = %d\n", chunk_size, mid);
 		while (a->top > remain)
 		{
 			if (a->stack[a->top] < mid)
+			{
 				pb(a, b);
+				if (b->stack[b->top] < b->stack[b->top - 1])
+					sb(b);
+			}	
 			else
 			{
 				ra(a);
@@ -173,7 +192,7 @@ int	push_chunk_a(t_stack *a, t_stack* b, int chunk_size)
 			}
 		}
 		while (--count_rotated >= 0) // restoring the chunk
-			rra(b);
+			rra(a);
 		count_rotated = 0;
 		// else
 		// {
@@ -256,15 +275,15 @@ void	push_chunks_ba(t_stack *a, t_stack *b, int old_top)
         push_chunks_ba(a, b, old_top / 2);
 		push_chunk_b(a, b, chunk_size);
         unsorted_c = count_unsorted(a, a->top - chunk_size + 1);
-		printf("for chunk %d, unsorted = %d\n", chunk_size, unsorted_c);
+		// printf("for chunk %d,, unsorted = %d\n", chunk_size, unsorted_c);
 		// push_chunk_a(a, b, count_unsorted);
         while (unsorted_c > 0)
         {
             unsorted_c = push_chunk_a(a, b, unsorted_c); // pushes 1 chunk from a to b
             push_chunk_b(a, b, unsorted_c); // pushes that chunk back to a
-			printf("for chunk %d, ", unsorted_c);
+			// printf("for chunk %d, ", unsorted_c);
             unsorted_c = count_unsorted(a, a->top - unsorted_c + 1);
-			printf("unsorted = %d\n", unsorted_c);
+			// printf("unsorted = %d\n", unsorted_c);
 		}
 	}
 }
@@ -332,7 +351,6 @@ int	main(int argc, char **argv)
 	printf("\n");
 	push_chunks_ab(a, b, 0);
 	push_chunks_ba(a, b, a->top + b->top + 1);
-	print_stack(a, b);
 	printf("is_sorted?  %d\n", is_sorted(a));
 	free(a->stack);
 	free(a);
