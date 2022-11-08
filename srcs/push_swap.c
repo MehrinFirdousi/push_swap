@@ -147,45 +147,46 @@ void	push_chunks_ab(t_stack *a, t_stack *b, int chunk_end) // chunk_end is the e
 	if (a->top > 0 && a->stack[a->top] > a->stack[a->top - 1])
 		sa(a);
 }
-
+   
 int	push_chunk_a(t_stack *a, t_stack* b, int chunk_size)
 {
 	int count_pushed;
+	int	count_rotated;
 	int	remain;
 	int	mid;
-	int top;
 
-	top = 1;
 	count_pushed = 0;
 	if (chunk_size > 2)
 		count_pushed = chunk_size - 2;
 	while (chunk_size > 2)
 	{
-		if (top)
+		remain = a->top - chunk_size / 2;
+		mid = find_mid(a, a->top, a->top - chunk_size + 1, 1);
+		while (a->top > remain)
 		{
-			remain = a->top - chunk_size / 2;
-			mid = find_mid(a, a->top, a->top - chunk_size + 1, 1);
-			while (a->top > remain)
+			if (a->stack[a->top] < mid)
+				pb(a, b);
+			else
 			{
-				if (a->stack[a->top] < mid)
-					pb(a, b);
-				else
-					ra(a);
+				ra(a);
+				count_rotated++;
 			}
-			top = 0;
 		}
-		else
-		{
-			remain = a->top - chunk_size / 2;
-			mid = find_mid(a, chunk_size - 1, 0, 1);
-			while (a->top > remain)
-			{
-				rra(a);
-				if (a->stack[a->top] < mid)
-					pb(a, b);
-			}
-			top = 1;
-		}
+		while (--count_rotated >= 0) // restoring the chunk
+			rra(b);
+		count_rotated = 0;
+		// else
+		// {
+		// 	remain = a->top - chunk_size / 2;
+		// 	mid = find_mid(a, chunk_size - 1, 0, 1);
+		// 	while (a->top > remain)
+		// 	{
+		// 		rra(a);
+		// 		if (a->stack[a->top] < mid)
+		// 			pb(a, b);
+		// 	}
+		// 	top = 1;
+		// }
 		chunk_size = chunk_size - chunk_size / 2;
 	}
 	if (a->top > 0 && a->stack[a->top] > a->stack[a->top - 1])
@@ -331,7 +332,8 @@ int	main(int argc, char **argv)
 	printf("\n");
 	push_chunks_ab(a, b, 0);
 	push_chunks_ba(a, b, a->top + b->top + 1);
-
+	print_stack(a, b);
+	printf("is_sorted?  %d\n", is_sorted(a));
 	free(a->stack);
 	free(a);
 	free(b->stack);
