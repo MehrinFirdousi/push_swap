@@ -96,25 +96,34 @@ int	find_mid(t_stack *s, int start, int end, int asc)
 	return (s->stack[i]);
 }
 
-int find_pivot(t_stack *s, int start, int end, int asc)
+// sub_pivot and remain are by-products of calculating the pivot
+int find_pivot(t_stack *s, int end, int *sub_pivot, int *remain)
 {
 	int	i;
 	int	min;
 	int	max;
+	int	pivot;
 
-	(void)asc;
-	max = s->stack[start];
-	i = start;
+	max = s->stack[s->top];
+	i = s->top;
 	while (--i >= end)
 		if (max < s->stack[i])
 			max = s->stack[i];
-	min = s->stack[start];
-	i = start;
+	min = s->stack[s->top];
+	i = s->top;
 	while (--i >= end)
 		if (min > s->stack[i])
 			min = s->stack[i];
-	printf("max = %d, min = %d\n", max, min);
-	return ((max + min) / 2);
+	pivot = (max + min) / 2;
+	*sub_pivot = (min + pivot) / 2;
+	// printf("pivot = %d, %d\n", pivot, *sub_pivot);
+	*remain = 0;
+	i = s->top + 1;
+	while (--i >= end)
+		if (s->stack[i] < pivot)
+			(*remain)++;
+	*remain = s->top - *remain;
+	return (pivot);
 }
 
 // returns the index of element till where it is sorted
@@ -151,31 +160,46 @@ int	is_sorted_desc(t_stack *s)
 
 // returns number of elements that were pushed
 // remove chunk_end
-void	push_chunks_ab(t_stack *a, t_stack *b, int chunk_end) // chunk_end is the end index of the chunk we're pushing
+void	push_chunks_ab(t_stack *a, t_stack *b) // chunk_end is the end index of the chunk we're pushing
 {
-	int	mid;
+	int	pivot;
 	int	remain;
-	int i;
-	int j;
+	int sub_pivot;
+	int	rb_flag;
 
-	i = 0;
-	while (a->top > chunk_end + 1 && ++i < 200)
+	rb_flag = 0;
+	while (a->top > 1)
 	{
-		mid = find_pivot(a, a->top, chunk_end, 1);
-		printf("mid = %d\n", mid);
-		remain = (a->top + chunk_end) / 2;
-		j = 0;
-		while (a->top > remain && ++j < 200)
+		pivot = find_pivot(a, 0, &sub_pivot, &remain);
+		while (a->top > remain)
 		{
-			if (a->stack[a->top] < mid)
-				pb(a, b);
-			else if (a->stack[0] < mid)
+			if (a->stack[a->top] < pivot)
 			{
+				if (rb_flag)
+					rb(b);
+				rb_flag = 0;
+				pb(a, b);
+				if (b->stack[b->top] < sub_pivot)
+					rb_flag = 1;
+			}
+			else if (a->stack[0] < pivot)
+			{
+				if (rb_flag)
+					rb(b);
+				rb_flag = 0;
 				rra(a);
 				pb(a, b);
+				if (b->stack[b->top] < sub_pivot)
+					rb_flag = 1;
 			}
-			else if (a->stack[a->top] >= mid)
-				ra(a);
+			else if (a->stack[a->top] >= pivot)
+			{
+				if (rb_flag)
+					rr(a, b);
+				else
+					ra(a);
+				rb_flag = 0;
+			}
 		}
 	}
 	if (a->top > 0 && a->stack[a->top] > a->stack[a->top - 1])
@@ -189,6 +213,7 @@ int	push_chunk_a(t_stack *a, t_stack* b, int chunk_size)
 	int	count_rotated;
 	int	remain;
 	int	mid;
+	int test;
 
 	count_pushed = 0;
 	if (chunk_size > 2)
@@ -197,8 +222,7 @@ int	push_chunk_a(t_stack *a, t_stack* b, int chunk_size)
 	while (chunk_size > 1)
 	{
 		remain = a->top - chunk_size / 2;
-		mid = find_pivot(a, a->top, a->top - chunk_size + 1, 1);
-		// printf("chunk_size in a = %d, mid = %d\n", chunk_size, mid);
+		mid = find_pivot(a, a->top - chunk_size + 1, &test, &test);
 		while (a->top > remain)
 		{
 			if (a->stack[a->top] < mid)
@@ -216,18 +240,6 @@ int	push_chunk_a(t_stack *a, t_stack* b, int chunk_size)
 		while (--count_rotated >= 0) // restoring the chunk
 			rra(a);
 		count_rotated = 0;
-		// else
-		// {
-		// 	remain = a->top - chunk_size / 2;
-		// 	mid = find_mid(a, chunk_size - 1, 0, 1);
-		// 	while (a->top > remain)
-		// 	{
-		// 		rra(a);
-		// 		if (a->stack[a->top] < mid)
-		// 			pb(a, b);
-		// 	}
-		// 	top = 1;
-		// }
 		chunk_size = chunk_size - chunk_size / 2;
 	}
 	if (a->top > 0 && a->stack[a->top] > a->stack[a->top - 1])
@@ -243,6 +255,7 @@ void	push_chunk_b(t_stack *a, t_stack *b, int chunk_size)
 	int	count_rotated;
 	int	last_chunk_size;
 	int old_top;
+	int test;
 
 	count_rotated = 0;
 	old_top =  a->top + b->top + 1;
@@ -250,7 +263,7 @@ void	push_chunk_b(t_stack *a, t_stack *b, int chunk_size)
 	while (chunk_size > 1)
 	{
 		remain = b->top - chunk_size / 2;
-		mid = find_pivot(b, b->top, b->top - chunk_size + 1, 0);
+		mid = find_pivot(b, b->top - chunk_size + 1, &test, &test);
 		while (b->top > remain)
 		{
 			if (b->stack[b->top] > mid)
@@ -259,11 +272,6 @@ void	push_chunk_b(t_stack *a, t_stack *b, int chunk_size)
 				if (a->stack[a->top] > a->stack[a->top - 1]) // search for pa sa in output file to see if this was ever useful
 					sa(a);
 			}
-			// if (b->stack[0] > mid)
-			// {
-			// 	rrb(b);
-			// 	pa(a, b);
-			// }
 			else
 			{
 				rb(b);
@@ -368,12 +376,14 @@ int	main(int argc, char **argv)
 	a = create_stack_a(argv);
 	b = init_stack(a->top + 1);
 	
-	for (int i = a->top; i >= 0; i--)
-		printf("%d ", a->stack[i]);
-	printf("\n");
-	push_chunks_ab(a, b, 0);
+	// for (int i = a->top; i >= 0; i--)
+	// 	printf("%d ", a->stack[i]);
+	// printf("\n");
+	push_chunks_ab(a, b);
+	// sort_stack_desc(a, b);
+
 	// push_chunks_ba(a, b, a->top + b->top + 1);
-	printf("is_sorted?  %d\n", is_sorted(a));
+	// printf("is_sorted?  %d\n", is_sorted(a));
 	free(a->stack);
 	free(a);
 	free(b->stack);
@@ -381,7 +391,7 @@ int	main(int argc, char **argv)
 	return (0);
 }
 
-// ********************* does full sort in desc *************
+// // ********************* does full sort in desc *************
 // void	sort_stack_desc(t_stack *a, t_stack *b)
 // {
 // 	int	max;
@@ -404,4 +414,3 @@ int	main(int argc, char **argv)
 // 	while (b->top != -1)
 // 		pa(a, b);
 // }
-
