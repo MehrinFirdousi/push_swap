@@ -266,24 +266,20 @@ void	push_chunks_ba(t_stack *a, t_stack *b, int old_top)
 {
 	int chunk_size;
 	int unsorted_c;
-    // int mid;
-    // int remain;
 
 	if (old_top > 1)
     {
         chunk_size = old_top - old_top / 2;
         push_chunks_ba(a, b, old_top / 2);
 		push_chunk_b(a, b, chunk_size);
-        unsorted_c = count_unsorted(a, a->top - chunk_size + 1);
-		// printf("for chunk %d,, unsorted = %d\n", chunk_size, unsorted_c);
-		// push_chunk_a(a, b, count_unsorted);
+        // unsorted_c = count_unsorted(a, a->top - chunk_size + 1);
+        unsorted_c = count_unsorted(a, 0);
         while (unsorted_c > 0)
         {
             unsorted_c = push_chunk_a(a, b, unsorted_c); // pushes 1 chunk from a to b
             push_chunk_b(a, b, unsorted_c); // pushes that chunk back to a
-			// printf("for chunk %d, ", unsorted_c);
-            unsorted_c = count_unsorted(a, a->top - unsorted_c + 1);
-			// printf("unsorted = %d\n", unsorted_c);
+            // unsorted_c = count_unsorted(a, a->top - unsorted_c + 1); // partially sorts
+            unsorted_c = count_unsorted(a, 0);
 		}
 	}
 }
