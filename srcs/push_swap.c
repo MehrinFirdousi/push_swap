@@ -66,10 +66,6 @@ int	find_mid(t_stack *s, int start, int end, int asc)
 	int	i;
 	int	j;
 
-	// printf("start = %d, end = %d\nnums: ", start, end);
-	// for (int i = start; i >= end; i--)
-	// 	printf("%d, ", s->stack[i]);
-	// printf("\n");
 	i = start;
 	while (i >= end)
 	{
@@ -98,6 +94,27 @@ int	find_mid(t_stack *s, int start, int end, int asc)
 		i--;
 	}
 	return (s->stack[i]);
+}
+
+int find_pivot(t_stack *s, int start, int end, int asc)
+{
+	int	i;
+	int	min;
+	int	max;
+
+	(void)asc;
+	max = s->stack[start];
+	i = start;
+	while (--i >= end)
+		if (max < s->stack[i])
+			max = s->stack[i];
+	min = s->stack[start];
+	i = start;
+	while (--i >= end)
+		if (min > s->stack[i])
+			min = s->stack[i];
+	printf("max = %d, min = %d\n", max, min);
+	return ((max + min) / 2);
 }
 
 // returns the index of element till where it is sorted
@@ -138,12 +155,17 @@ void	push_chunks_ab(t_stack *a, t_stack *b, int chunk_end) // chunk_end is the e
 {
 	int	mid;
 	int	remain;
-	
-	while (a->top > chunk_end + 1)
+	int i;
+	int j;
+
+	i = 0;
+	while (a->top > chunk_end + 1 && ++i < 200)
 	{
-		mid = find_mid(a, a->top, chunk_end, 1);
+		mid = find_pivot(a, a->top, chunk_end, 1);
+		printf("mid = %d\n", mid);
 		remain = (a->top + chunk_end) / 2;
-		while (a->top > remain)
+		j = 0;
+		while (a->top > remain && ++j < 200)
 		{
 			if (a->stack[a->top] < mid)
 				pb(a, b);
@@ -175,7 +197,7 @@ int	push_chunk_a(t_stack *a, t_stack* b, int chunk_size)
 	while (chunk_size > 1)
 	{
 		remain = a->top - chunk_size / 2;
-		mid = find_mid(a, a->top, a->top - chunk_size + 1, 1);
+		mid = find_pivot(a, a->top, a->top - chunk_size + 1, 1);
 		// printf("chunk_size in a = %d, mid = %d\n", chunk_size, mid);
 		while (a->top > remain)
 		{
@@ -228,7 +250,7 @@ void	push_chunk_b(t_stack *a, t_stack *b, int chunk_size)
 	while (chunk_size > 1)
 	{
 		remain = b->top - chunk_size / 2;
-		mid = find_mid(b, b->top, b->top - chunk_size + 1, 0);
+		mid = find_pivot(b, b->top, b->top - chunk_size + 1, 0);
 		while (b->top > remain)
 		{
 			if (b->stack[b->top] > mid)
@@ -274,7 +296,7 @@ void	push_chunks_ba(t_stack *a, t_stack *b, int old_top)
         chunk_size = old_top - old_top / 2;
         push_chunks_ba(a, b, old_top / 2);
 		push_chunk_b(a, b, chunk_size);
-        unsorted_c = count_unsorted(a, a->top - chunk_size + 1);
+        unsorted_c = count_unsorted(a, 0);
 		// printf("for chunk %d,, unsorted = %d\n", chunk_size, unsorted_c);
 		// push_chunk_a(a, b, count_unsorted);
         while (unsorted_c > 0)
@@ -282,7 +304,7 @@ void	push_chunks_ba(t_stack *a, t_stack *b, int old_top)
             unsorted_c = push_chunk_a(a, b, unsorted_c); // pushes 1 chunk from a to b
             push_chunk_b(a, b, unsorted_c); // pushes that chunk back to a
 			// printf("for chunk %d, ", unsorted_c);
-            unsorted_c = count_unsorted(a, a->top - unsorted_c + 1);
+            unsorted_c = count_unsorted(a, 0);
 			// printf("unsorted = %d\n", unsorted_c);
 		}
 	}
@@ -350,7 +372,7 @@ int	main(int argc, char **argv)
 		printf("%d ", a->stack[i]);
 	printf("\n");
 	push_chunks_ab(a, b, 0);
-	push_chunks_ba(a, b, a->top + b->top + 1);
+	// push_chunks_ba(a, b, a->top + b->top + 1);
 	printf("is_sorted?  %d\n", is_sorted(a));
 	free(a->stack);
 	free(a);
