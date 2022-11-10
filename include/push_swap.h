@@ -31,6 +31,15 @@ typedef struct s_stack
 	int	top;
 }	t_stack;
 
+typedef struct s_chunk
+{
+	int	pivot;
+	int	sub_pivot;
+	int	remain;
+	int	count_top;
+	int	count_bottom;
+}	t_chunk;
+
 int		ft_atoi_ofd(const char *nptr);
 int		exit_err(t_stack *a);
 char	**parse_args(char **argv, int *count);
