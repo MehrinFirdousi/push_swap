@@ -331,6 +331,29 @@ void	sort_stack_desc(t_stack *a, t_stack *b)
 	while (b->top > half)
 		pa(a, b);
 }
+// ********************* does full sort in desc *************
+void	sort_stack_desc_full(t_stack *a, t_stack *b)
+{
+	int	max;
+
+	while (b->top > 0)
+	{
+		max = find_max(b);
+		if (b->top - max == 1)
+			sb(b);
+		else if (max >= b->top / 2)
+			while (++max <= b->top)
+				rb(b);
+		else if (max < b->top / 2)
+			while (--max >= -1)
+				rrb(b);
+		if (is_sorted(b) == 0)
+			break ;
+		pa(a, b);
+	}
+	while (b->top != -1)
+		pa(a, b);
+}
 
 int	main(int argc, char **argv)
 {
@@ -346,8 +369,9 @@ int	main(int argc, char **argv)
 		printf("%d ", a->stack[i]);
 	// printf("\n");
 	push_chunks_ab(a, b, 0);
+	// sort_stack_desc_full(a, b);
 	push_chunks_ba(a, b, a->top + b->top + 1);
-	printf("is_sorted?  %d\n", is_sorted(a));
+	printf("\nis_sorted?  %d\n", is_sorted(a));
 	free(a->stack);
 	free(a);
 	free(b->stack);
@@ -355,27 +379,4 @@ int	main(int argc, char **argv)
 	return (0);
 }
 
-// ********************* does full sort in desc *************
-// void	sort_stack_desc(t_stack *a, t_stack *b)
-// {
-// 	int	max;
-
-// 	while (b->top > 0)
-// 	{
-// 		max = find_max(b);
-// 		if (b->top - max == 1)
-// 			sb(b);
-// 		else if (max >= b->top / 2)
-// 			while (++max <= b->top)
-// 				rb(b);
-// 		else if (max < b->top / 2)
-// 			while (--max >= -1)
-// 				rrb(b);
-// 		if (is_sorted(b) == 0)
-// 			break ;
-// 		pa(a, b);
-// 	}
-// 	while (b->top != -1)
-// 		pa(a, b);
-// }
 
