@@ -98,19 +98,48 @@ void	push_ab(t_stack *a, t_stack *b, t_chunk *c)
 // remove chunk_end
 void	push_chunks(t_stack *a, t_stack *b) // chunk_end is the end index of the chunk we're pushing
 {
-	t_chunk c;
+	t_chunk ca, cb;
 
 	if (a->top > 1)
 	{
-		push_ab(a, b, &c);
+		push_ab(a, b, &cb);
 		push_chunks(a, b);
-		// printf("p sp ct cb %d %d %d %d\n", c.pivot, c.sub_pivot, c.count_top, c.count_bottom);
+		// printf("p sp ct cb %d %d %d %d\n", cb.pivot, cb.sub_pivot, cb.count_top, cb.count_bottom);
 		// one recursive iteration handles both the top and bottom set
+
+		// while b.counttop > 1
+		 ˙	// find pivot for the b.count_top elements in b
+		:.	// push from b to a everything larger than pivot, separate in A according to sub_pivot
+				// func ^ takes (a, b, &ca, &cb)
+				// ca count_top and count_bottom are set
+		:˙		// rrb everything that was rb'ed while pushing from b to a
+				// update value of b.count_top -> b object still corresponds to the whole chunk that includes top and bottom
+		:˙	// func(a, b, &ca) // to go back and forth until that set is sorted in a
 	}
 	if (a->top > 0 && a->stack[a->top] > a->stack[a->top - 1])
 		sa(a);
 }
 
+func(a, b, a_chunk)
+{
+	t_chunk b_chunk;
+
+:	// count unsorted in a starting from a.count_bottom elements till top (to skip the bottom elements)
+
+	// if (count_unsorted > 0)
+	//{
+:	//		find pivot for unsorted (top) set in a
+.:	//		do full chunk push a to b - (only top set) separate while pushing to b using pivot (as in push everything, not just whats on one side of the pivot, but separate it in b (so dont use subpivot)
+	//		(push a to b (push the full unsorted set but split while pushing))
+.˙	//		^ rrb everything that was rb'ed when splitting (combine top and bottom sets to make new top set)
+.˙	//		^ update b.counttop according to what was pushed just now 
+.˙	// 		find pivot for counttop set in b
+:	//		do full chunk push b to a - (only top set) separate while pushing to a using pivot 
+	//		^ rra everything that was ra'ed while pushing from b to a
+	//		^ update a.counttop according to what was pushed just now 
+	//		func(a, b, a_chunk)
+	//}
+}
 // returns the index of the largest element in the stack
 int	find_max(t_stack *s)
 {

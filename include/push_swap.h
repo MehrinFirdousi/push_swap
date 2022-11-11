@@ -36,8 +36,8 @@ typedef struct s_chunk
 	int	pivot;
 	int	sub_pivot;
 	int	remain;
-	int	count_top;
-	int	count_bottom;
+	int	count_top; // count of elements at the top of the stack being pushed to
+	int	count_bottom; // same ^ but at the bottom of the stack
 }	t_chunk;
 
 int		ft_atoi_ofd(const char *nptr);
