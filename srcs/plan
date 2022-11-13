@@ -1,9 +1,0 @@
-for every chunk in b
-	find mid and push everything > mid to a using MPA
-	now from current chunk, all nums > mid are in a and all nums <= mid are at the bottom of b
-	find where a is unsorted from and push these (unsorted nums) to b using MPA
-	store the number of elements pushed from a to b as the chunk_size 
-	go back to 2 
-
-figure out:
-	how to keep track of chunk_size when going back and forth between a and b 

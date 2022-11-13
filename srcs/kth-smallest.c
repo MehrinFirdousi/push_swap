@@ -16,11 +16,13 @@ int partition(int arr[], int l, int r)
 {
 	int x;
 	int i;
+	int j;
 	int temp;
 
 	x = arr[r];
 	i = l;
-	for (int j = l; j <= r - 1; j++) 
+	j = l; 
+	while(j <= r - 1)
 	{
 		if (arr[j] <= x) 
 		{
@@ -29,11 +31,24 @@ int partition(int arr[], int l, int r)
 			arr[j] = temp;
 			i++;
 		}
+		j++;
 	}
 	temp = arr[i];
 	arr[i] = arr[r];
 	arr[r] = temp;
 	return (i);
+}
+
+int *d_array(int arr[], int r)
+{
+	int i;
+	int *dup_arr;
+	
+	dup_arr = (int *)malloc((r + 1) * sizeof(int));
+	i = -1;
+	while (++i <= r)
+		dup_arr[i] = arr[i];
+	return (dup_arr);
 }
 
 int kthSmallest(int arr[], int l, int r, int k)
@@ -49,7 +64,7 @@ int kthSmallest(int arr[], int l, int r, int k)
 			return (kthSmallest(arr, l, index - 1, k));
 		return (kthSmallest(arr, index + 1, r, k - index + l - 1));
 	}
-	return (INT_MAX);
+	return (0);
 }
 
 // // Driver program to test above methods
