@@ -36,8 +36,6 @@ typedef struct s_chunk
 	int	pivot;
 	int	sub_pivot;
 	int	remain;
-	int	count_top; // count of elements at the top of the stack being pushed to
-	int	count_bottom; // same ^ but at the bottom of the stack
 }	t_chunk;
 
 int		ft_atoi_ofd(const char *nptr);
@@ -47,6 +45,15 @@ t_stack	*create_stack_a(char **argv);
 t_stack	*init_stack(int len);
 void	print_stack(t_stack *a, t_stack *b);
 int		kthSmallest(int arr[], int l, int r, int k);
+int		*d_array(int arr[], int r);
+void	find_pivot(t_stack *s, int end, t_chunk *c);
+int		count_unsorted(t_stack *s, int i);
+int		find_max(t_stack *s);
+int		find_second_max(t_stack *s);
+int		is_sorted(t_stack *s) ;
+int		push_max(t_stack *a, t_stack *b, int max);
+void	sort_stack_till(t_stack *a, t_stack *b, int limit);
+void	sort_stack_full(t_stack *a, t_stack *b);
 
 void	sa(t_stack *a);
 void	sb(t_stack *a);

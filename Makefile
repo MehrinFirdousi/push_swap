@@ -12,7 +12,7 @@
 
 NAME	=	push_swap
 
-SRCS	=	srcs/push_swap.c	srcs/setup.c \
+SRCS	=	srcs/push_swap.c	srcs/setup.c	srcs/push_swap_utils.c \
 			operations/op_ab.c	operations/op_ps.c	operations/op_r.c \
 			srcs/kth-smallest.c
 
