@@ -6,7 +6,7 @@
 /*   By: mfirdous <mfirdous@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/10 10:45:25 by mfirdous          #+#    #+#             */
-/*   Updated: 2022/11/10 11:34:07 by mfirdous         ###   ########.fr       */
+/*   Updated: 2022/11/11 23:38:47 by mfirdous         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,8 +72,6 @@ int	find_mid(t_stack *s, int start, int end, int asc)
 	}
 	return (s->stack[i]);
 }
-
-
 
 int	is_sorted_desc(t_stack *s) 
 {

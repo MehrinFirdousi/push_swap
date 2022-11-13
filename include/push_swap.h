@@ -46,6 +46,7 @@ char	**parse_args(char **argv, int *count);
 t_stack	*create_stack_a(char **argv);
 t_stack	*init_stack(int len);
 void	print_stack(t_stack *a, t_stack *b);
+int		kthSmallest(int arr[], int l, int r, int k);
 
 void	sa(t_stack *a);
 void	sb(t_stack *a);

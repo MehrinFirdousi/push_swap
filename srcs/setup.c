@@ -46,7 +46,7 @@ int	exit_err(t_stack *a)
 {
 	free(a->stack);
 	free(a);
-	ft_printf("Error\n");
+	write(2, "Error\n", 6);
 	exit(EXIT_FAILURE);
 }
 

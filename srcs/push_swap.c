@@ -13,6 +13,13 @@
 #include "push_swap.h"
 
 /**
+ * @test
+ * 
+ * ARG=`ruby -e "puts (-49..50).to_a.shuffle.join(' ')"`; ./push_swap $ARG > output && < output ./checker_linux $ARG && < output wc -l
+ * 
+ */
+
+/**
  * @todo
  * 
  * optimization ideas - 
@@ -54,6 +61,53 @@ void	find_pivot(t_stack *s, int end, t_chunk *c)
 	c->remain = s->top - (c->count_top + c->count_bottom);
 }
 
+int *d_array(int arr[], int r)
+{
+	int i;
+	int *dup_arr;
+	
+	dup_arr = (int *)malloc((r + 1) * sizeof(int));
+	i = -1;
+	while (++i <= r)
+		dup_arr[i] = arr[i];
+	return (dup_arr);
+}
+
+void	find_median(t_stack *s, int end, t_chunk *c)
+{
+	int chunk_size;
+	int median_pos;
+	int sub_chunk_size;
+	int sub_median_pos;
+	int i;
+	int *arr;
+
+	arr = d_array(s->stack, s->top);
+	chunk_size = s->top - end + 1;
+	median_pos = chunk_size / 2 + 1;
+	c->pivot = kthSmallest(arr, end, s->top, median_pos);
+	// printf("chunksize %d, median_pos %d, pivot %d\n", chunk_size, median_pos, c->pivot);
+
+	// might fail because arr was modified by kthsmallest call above
+	sub_chunk_size = chunk_size - median_pos + !(chunk_size & 1);
+	sub_median_pos = sub_chunk_size / 2 + 1;
+	c->sub_pivot = kthSmallest(arr, end, s->top, sub_median_pos);
+	// printf("sub_chunksize %d, sub_median_pos %d, sub_pivot %d\n", sub_chunk_size, sub_median_pos, c->sub_pivot);
+	
+	c->count_top = 0;
+	c->count_bottom = 0;
+	i = s->top + 1;
+	while (--i >= end)
+		if (s->stack[i] < c->pivot && s->stack[i] >= c->sub_pivot)
+			(c->count_top)++;
+	i = s->top + 1;
+	while (--i >= end)
+		if (s->stack[i] < c->sub_pivot)
+			(c->count_bottom)++;
+	c->remain = s->top - (c->count_top + c->count_bottom);
+	free(arr);
+}
+
 // returns the count of unsorted elements from the top 
 int	count_unsorted(t_stack *s, int i)
 {
@@ -69,8 +123,9 @@ void	push_ab(t_stack *a, t_stack *b, t_chunk *c)
 	int	rb_flag;
 
 	rb_flag = 0;
-	find_pivot(a, 0, c);
-	// printf("remain = %d\n", c->remain);
+	find_median(a, 0, c);
+	// printf("%d %d\n", c->pivot, c->sub_pivot);
+
 	while (a->top > c->remain)
 	{
 		if (a->stack[a->top] < c->pivot || a->stack[0] < c->pivot)
@@ -83,6 +138,8 @@ void	push_ab(t_stack *a, t_stack *b, t_chunk *c)
 			pb(a, b);
 			if (b->stack[b->top] < c->sub_pivot)
 				rb_flag = 1;
+			// else if (b->stack[b->top] < b->stack[b->top - 1])
+			// 	sb(b);
 		}
 		else if (a->stack[a->top] >= c->pivot)
 		{
@@ -94,52 +151,7 @@ void	push_ab(t_stack *a, t_stack *b, t_chunk *c)
 		}
 	}
 }
-// returns number of elements that were pushed
-// remove chunk_end
-void	push_chunks(t_stack *a, t_stack *b) // chunk_end is the end index of the chunk we're pushing
-{
-	t_chunk ca, cb;
 
-	if (a->top > 1)
-	{
-		push_ab(a, b, &cb);
-		push_chunks(a, b);
-		// printf("p sp ct cb %d %d %d %d\n", cb.pivot, cb.sub_pivot, cb.count_top, cb.count_bottom);
-		// one recursive iteration handles both the top and bottom set
-
-		// while b.counttop > 1
-		 ˙	// find pivot for the b.count_top elements in b
-		:.	// push from b to a everything larger than pivot, separate in A according to sub_pivot
-				// func ^ takes (a, b, &ca, &cb)
-				// ca count_top and count_bottom are set
-		:˙		// rrb everything that was rb'ed while pushing from b to a
-				// update value of b.count_top -> b object still corresponds to the whole chunk that includes top and bottom
-		:˙	// func(a, b, &ca) // to go back and forth until that set is sorted in a
-	}
-	if (a->top > 0 && a->stack[a->top] > a->stack[a->top - 1])
-		sa(a);
-}
-
-func(a, b, a_chunk)
-{
-	t_chunk b_chunk;
-
-:	// count unsorted in a starting from a.count_bottom elements till top (to skip the bottom elements)
-
-	// if (count_unsorted > 0)
-	//{
-:	//		find pivot for unsorted (top) set in a
-.:	//		do full chunk push a to b - (only top set) separate while pushing to b using pivot (as in push everything, not just whats on one side of the pivot, but separate it in b (so dont use subpivot)
-	//		(push a to b (push the full unsorted set but split while pushing))
-.˙	//		^ rrb everything that was rb'ed when splitting (combine top and bottom sets to make new top set)
-.˙	//		^ update b.counttop according to what was pushed just now 
-.˙	// 		find pivot for counttop set in b
-:	//		do full chunk push b to a - (only top set) separate while pushing to a using pivot 
-	//		^ rra everything that was ra'ed while pushing from b to a
-	//		^ update a.counttop according to what was pushed just now 
-	//		func(a, b, a_chunk)
-	//}
-}
 // returns the index of the largest element in the stack
 int	find_max(t_stack *s)
 {
@@ -154,6 +166,27 @@ int	find_max(t_stack *s)
 	return (max_index);
 }
 
+// returns the index of the second largest element in the stack
+int find_second_max(t_stack *s)
+{
+	int i;
+	int j;
+	int	count_big;
+
+	i = -1;
+	while (++i <= s->top)
+	{
+		j = -1;
+		count_big = 0;
+		while (++j <= s->top)
+			if (s->stack[i] < s->stack[j])
+				count_big++;
+		if (count_big == 1)
+			return (i);
+	}
+	return (0);
+}
+
 // returns the index of element till where it is sorted
 int	is_sorted(t_stack *s) 
 {
@@ -166,28 +199,125 @@ int	is_sorted(t_stack *s)
 	return (0);
 }
 
+int	push_max(t_stack *a, t_stack *b, int max)
+{
+	if (b->top - max == 1)
+		sb(b);
+	else if (max >= b->top / 2)
+		while (++max <= b->top)
+			rb(b);
+	else if (max < b->top / 2)
+		while (--max >= -1)
+			rrb(b);
+	if (is_sorted(b) == 0)
+		return (1);
+	pa(a, b);
+	return (0);
+}
+
+void	sort_stack_half(t_stack *a, t_stack *b)
+{
+	int	max;
+	int max2;
+	int	max_dist;
+	int max2_dist;
+	int	half;
+
+	half = (b->top + a->top) / 2;
+	while (b->top > half)
+	{
+		max = find_max(b);
+		if (max >= b->top / 2)
+			max_dist = b->top - max;
+		else
+			max_dist = max + 1;
+	
+		max2 = find_second_max(b);
+		if (max2 >= b->top / 2)
+			max2_dist = b->top - max2;
+		else
+			max2_dist = max2 + 1;
+		if (max2_dist < max_dist)
+		{
+			if (push_max(a, b, max2)) // returns 1 if the list got sorted while rotating
+				break;
+			max = find_max(b); // find max again because the elements moved
+			if (push_max(a, b, max)) // returns 1 if the list got sorted while rotating
+				break;
+			sa(a);
+		}
+		else
+			if (push_max(a, b, max)) // returns 1 if the list got sorted while rotating
+				break;
+	}
+	while (b->top > half)
+		pa(a, b);
+}
+
+// returns number of elements that were pushed
+// remove chunk_end
+void	push_chunks(t_stack *a, t_stack *b) // chunk_end is the end index of the chunk we're pushing
+{
+	t_chunk cb;
+
+	if (a->top > 1)
+	{
+		push_ab(a, b, &cb);
+		push_chunks(a, b);
+		printf("p sp ct cb r %d %d %d %d %d\n", cb.pivot, cb.sub_pivot, cb.count_top, cb.count_bottom, cb.remain);
+	}
+	if (cb.remain <= (a->top + b->top + 2) / 2)
+	{
+		if (a->top > 0 && a->stack[a->top] > a->stack[a->top - 1])
+			sa(a);
+		sort_stack_half(a, b);
+	} 
+}
+
 // ********************* does full sort in desc *************
 void	sort_stack_desc_full(t_stack *a, t_stack *b)
 {
 	int	max;
+	int max2;
+	int	max_dist;
+	int max2_dist;
 
 	while (b->top > 0)
 	{
 		max = find_max(b);
-		if (b->top - max == 1)
-			sb(b);
-		else if (max >= b->top / 2)
-			while (++max <= b->top)
-				rb(b);
-		else if (max < b->top / 2)
-			while (--max >= -1)
-				rrb(b);
-		if (is_sorted(b) == 0)
-			break ;
-		pa(a, b);
+		if (max >= b->top / 2)
+			max_dist = b->top - max;
+		else
+			max_dist = max + 1;
+	
+		max2 = find_second_max(b);
+		if (max2 >= b->top / 2)
+			max2_dist = b->top - max2;
+		else
+			max2_dist = max2 + 1;
+		if (max2_dist < max_dist)
+		{
+			if (push_max(a, b, max2)) // returns 1 if the list got sorted while rotating
+				break;
+			max = find_max(b); // find max again because the elements moved
+			if (push_max(a, b, max)) // returns 1 if the list got sorted while rotating
+				break;
+			sa(a);
+		}
+		else
+			if (push_max(a, b, max)) // returns 1 if the list got sorted while rotating
+				break;
 	}
 	while (b->top != -1)
 		pa(a, b);
+}
+
+void	test(t_stack *a, t_stack *b, t_chunk *c)
+{
+	find_median(a, 0, c);
+	printf("remain = %d\n", c->remain);
+	printf("%d %d\n", c->count_top, c->count_bottom);
+	(void)b;
 }
 
 int	main(int argc, char **argv)
@@ -200,12 +330,19 @@ int	main(int argc, char **argv)
 	a = create_stack_a(argv);
 	b = init_stack(a->top + 1);
 	
-	// for (int i = a->top; i >= 0; i--)
-	// 	printf("%d ", a->stack[i]);
-	// printf("\n");
+	for (int i = a->top; i >= 0; i--)
+		printf("%d ", a->stack[i]);
+	printf("\n");
+	
+	if (is_sorted(a) == 0)
+		exit(0);
 	push_chunks(a, b);
-	sort_stack_desc_full(a, b);
-
+	printf("tops %d %d\n", a->top, b->top);
+	print_stack(a, b);
+	// sort_stack_desc_full(a, b);
+	if (a->top > 0 && a->stack[a->top] > a->stack[a->top - 1])
+		sa(a);
+	printf("is_sorted = %d\n", is_sorted(a));
 	free(a->stack);
 	free(a);
 	free(b->stack);
