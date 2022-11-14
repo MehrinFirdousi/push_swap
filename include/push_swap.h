@@ -25,10 +25,6 @@
 # include <limits.h>
 # include "libft.h"
 
-# define TOP 2
-# define MID 1
-# define BOT 0
-
 typedef struct s_stack
 {
 	int	*stack;
@@ -47,26 +43,35 @@ int		exit_err(t_stack *a);
 char	**parse_args(char **argv, int *count);
 t_stack	*create_stack_a(char **argv);
 t_stack	*init_stack(int len);
-void	print_stack(t_stack *a, t_stack *b);
+
+int		partition(int *arr, int l, int r);
 int		kth_smallest(int arr[], int l, int r, int k);
 int		find_kth_smallest(t_stack *s, int k);
-void	find_median(t_stack *s, t_chunk *c, int split);
-void	rotate(t_stack *a, t_stack *b, int *rb_flag);
-int		is_sorted(t_stack *s);
-int		push_max(t_stack *a, t_stack *b, int max);
-void	sort_stack_full(t_stack *a, t_stack *b);
 int		find_closest(t_stack *b, int *max_dist, int pos);
+void	find_median(t_stack *s, t_chunk *c, int split);
+
 int		get_index(t_stack *s, int num);
+int		is_sorted(t_stack *s);
+void	rotate(t_stack *a, t_stack *b, int *rb_flag);
+int		push_max(t_stack *a, t_stack *b, int max);
+void	sort_3(t_stack *a);
+
+void	sort_stack_full(t_stack *a, t_stack *b);
+void	push_ab(t_stack *a, t_stack *b, int split);
+int		find_limit(t_stack *a);
+void	push_chunks(t_stack *a, t_stack *b);
 
 // operations
 void	sa(t_stack *a);
 void	sb(t_stack *a);
+void	ss(t_stack *a, t_stack *b);
 void	pa(t_stack *a, t_stack *b);
 void	pb(t_stack *a, t_stack *b);
 void	ra(t_stack *a);
 void	rb(t_stack *a);
+void	rr(t_stack *a, t_stack *b);
 void	rra(t_stack *a);
 void	rrb(t_stack *a);
-void	rr(t_stack *a, t_stack *b);
+void	rrr(t_stack *a, t_stack *b);
 
 #endif

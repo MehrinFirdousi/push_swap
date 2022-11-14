@@ -61,7 +61,7 @@ int	find_kth_smallest(t_stack *s, int k)
 	int	*dup_arr;
 	int	target;
 
-	dup_arr = (int *)malloc((s->top + 1) * sizeof(int));
+	dup_arr = (int *)ft_malloc((s->top + 1) * sizeof(int));
 	i = -1;
 	while (++i <= s->top)
 		dup_arr[i] = s->stack[i];
