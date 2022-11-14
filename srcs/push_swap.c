@@ -12,55 +12,38 @@
 
 #include "push_swap.h"
 
-/**
- * @test
- * 
- * ARG=`ruby -e "puts (-49..50).to_a.shuffle.join(' ')"`; ./push_swap $ARG > output && < output ./checker_linux $ARG && < output wc -l 
- */
-
-/**
- * @todo 
- * 
- * sort 3
- * check is_sorted before sorting
- * leak check
- * norm
- * 
- */
-
-void	find_median(t_stack *s, int chunk_size, t_chunk *c, int split)
+void	sort_stack_full(t_stack *a, t_stack *b)
 {
-	int end;
-	int median_pos;
-	int sub_chunk_size;
-	int sub_median_pos;
-	int *arr;
+	int	max;
+	int	max2;
+	int	max_dist;
+	int	max2_dist;
 
-	arr = d_array(s->stack, s->top);
-	end = s->top - chunk_size + 1;
-	median_pos = chunk_size / split + 1;
-	c->pivot = kthSmallest(arr, end, s->top, median_pos);
-
-	sub_chunk_size = median_pos + !(chunk_size & 1);
-	sub_median_pos = sub_chunk_size / 2 + 1;
-	c->sub_pivot = kthSmallest(arr, end, s->top, sub_median_pos);
-	
-	chunk_size = 0;
-	while (end <= s->top)
-		if (s->stack[end++] < c->pivot)
-			chunk_size++;
-	c->remain = s->top - chunk_size;
-	free(arr);
+	while (b->top > 0)
+	{
+		max = find_closest(b, &max_dist, 0);
+		max2 = find_closest(b, &max2_dist, 1);
+		if (max2_dist < max_dist)
+		{
+			push_max(a, b, max2);
+			max = get_index(b, find_kth_smallest(b, b->top));
+			push_max(a, b, max);
+			sa(a);
+		}
+		else
+			push_max(a, b, max);
+	}
+	while (b->top > -1)
+		pa(a, b);
 }
 
-// pushes all elements of a to b at the start, t_chunk c info is set here
 void	push_ab(t_stack *a, t_stack *b, int split)
 {
 	t_chunk	c;
 	int		rb_flag;
 
 	rb_flag = 0;
-	find_median(a, a->top + 1, &c, split);
+	find_median(a, &c, split);
 	while (a->top > c.remain)
 	{
 		if (a->stack[a->top] < c.pivot || a->stack[0] < c.pivot)
@@ -75,13 +58,7 @@ void	push_ab(t_stack *a, t_stack *b, int split)
 				rb_flag = 1;
 		}
 		else if (a->stack[a->top] >= c.pivot)
-		{
-			if (rb_flag)
-				rr(a, b);
-			else
-				ra(a);
-			rb_flag = 0;
-		}
+			rotate(a, b, &rb_flag);
 	}
 }
 
@@ -95,10 +72,10 @@ int	find_limit(t_stack *a)
 	return (limit);
 }
 
-void	push_chunks(t_stack *a, t_stack *b) // chunk_end is the end index of the chunk we're pushing
+void	push_chunks(t_stack *a, t_stack *b)
 {
-	int limit;
-	int i;
+	int	limit;
+	int	i;
 
 	while (a->top > 1)
 	{
@@ -122,17 +99,18 @@ int	main(int argc, char **argv)
 	b = init_stack(a->top + 1);
 	if (is_sorted(a) == 0)
 		exit(0);
-	push_chunks(a, b);
-	sort_stack_full(a, b);
-	if (a->top > 0 && a->stack[a->top] > a->stack[a->top - 1])
-		sa(a);
+	if (a->top == 2)
+		sort_3(a);
+	else
+	{
+		push_chunks(a, b);
+		sort_stack_full(a, b);
+		if (a->top > 0 && a->stack[a->top] > a->stack[a->top - 1])
+			sa(a);
+	}
 	free(a->stack);
 	free(a);
 	free(b->stack);
 	free(b);
 	return (0);
 }
-
-// for (int i = a->top; i >= 0; i--)
-	// 	printf("%d ", a->stack[i]);
-	// printf("\n");

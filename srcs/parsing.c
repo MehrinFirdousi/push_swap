@@ -50,7 +50,7 @@ int	exit_err(t_stack *a)
 	exit(EXIT_FAILURE);
 }
 
-// literally just parses the args
+// returns the numbers as an array of strings 
 char	**parse_args(char **argv, int *count)
 {
 	char	*nums_str;
@@ -115,30 +115,4 @@ t_stack	*init_stack(int len)
 	s->stack = (int *)ft_malloc(sizeof(int) * len);
 	s->top = -1;
 	return (s);
-}
-
-// remove
-void	print_stack(t_stack *a, t_stack *b)
-{
-	int	i;
-	int	top_a;
-	int	top_b;
-
-	top_a = (!a? -1 : a->top);
-	top_b = (!b? -1 : b->top);
-	i = (top_a >= top_b? top_a : top_b) + 1;
-	printf("-----------------\n");
-	while (--i >= 0)
-	{
-		printf("%d\t", i);
-		if (i <= top_a)
-			printf("%d", a->stack[i]);
-		printf("\t");
-		if (i <= top_b)
-			printf("%d", b->stack[i]);
-		printf("\n");
-	}
-	printf("_\t_\t_\n");
-	printf("i\ta\tb\n");
-	printf("-----------------\n");
 }

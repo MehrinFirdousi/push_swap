@@ -25,6 +25,10 @@
 # include <limits.h>
 # include "libft.h"
 
+# define TOP 2
+# define MID 1
+# define BOT 0
+
 typedef struct s_stack
 {
 	int	*stack;
@@ -44,29 +48,25 @@ char	**parse_args(char **argv, int *count);
 t_stack	*create_stack_a(char **argv);
 t_stack	*init_stack(int len);
 void	print_stack(t_stack *a, t_stack *b);
-int		kthSmallest(int arr[], int l, int r, int k);
-int		*d_array(int arr[], int r);
-void	find_pivot(t_stack *s, int end, t_chunk *c);
-int		count_unsorted(t_stack *s, int i);
-int		find_max(t_stack *s);
-int		find_second_max(t_stack *s);
-int		is_sorted(t_stack *s) ;
+int		kth_smallest(int arr[], int l, int r, int k);
+int		find_kth_smallest(t_stack *s, int k);
+void	find_median(t_stack *s, t_chunk *c, int split);
+void	rotate(t_stack *a, t_stack *b, int *rb_flag);
+int		is_sorted(t_stack *s);
 int		push_max(t_stack *a, t_stack *b, int max);
-void	sort_stack_till(t_stack *a, t_stack *b, int limit);
 void	sort_stack_full(t_stack *a, t_stack *b);
+int		find_closest(t_stack *b, int *max_dist, int pos);
+int		get_index(t_stack *s, int num);
 
+// operations
 void	sa(t_stack *a);
 void	sb(t_stack *a);
 void	pa(t_stack *a, t_stack *b);
 void	pb(t_stack *a, t_stack *b);
-
 void	ra(t_stack *a);
 void	rb(t_stack *a);
 void	rra(t_stack *a);
 void	rrb(t_stack *a);
-
-void	ss(t_stack *a, t_stack *b);
 void	rr(t_stack *a, t_stack *b);
-void	rrr(t_stack *a, t_stack *b);
 
 #endif

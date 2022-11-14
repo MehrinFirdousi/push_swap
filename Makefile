@@ -12,9 +12,8 @@
 
 NAME	=	push_swap
 
-SRCS	=	srcs/push_swap.c	srcs/setup.c	srcs/push_swap_utils.c \
+SRCS	=	srcs/push_swap.c	srcs/parsing.c	srcs/push_swap_utils.c srcs/kth_smallest.c \
 			operations/op_ps.c	operations/op_r.c \
-			srcs/kth-smallest.c
 
 OBJS	=	${SRCS:.c=.o}
 
