@@ -97,16 +97,17 @@ int	main(int argc, char **argv)
 		return (0);
 	a = create_stack_a(argv);
 	b = init_stack(a->top + 1);
-	if (is_sorted(a) == 0)
-		exit(0);
-	if (a->top == 2)
-		sort_3(a);
-	else
+	if (is_sorted(a) != 0)
 	{
-		push_chunks(a, b);
-		sort_stack_full(a, b);
-		if (a->top > 0 && a->stack[a->top] > a->stack[a->top - 1])
-			sa(a);
+		if (a->top == 2)
+			sort_3(a);
+		else
+		{
+			push_chunks(a, b);
+			sort_stack_full(a, b);
+			if (a->top > 0 && a->stack[a->top] > a->stack[a->top - 1])
+				sa(a);
+		}
 	}
 	free(a->stack);
 	free(a);

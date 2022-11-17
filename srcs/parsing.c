@@ -93,7 +93,7 @@ t_stack	*create_stack_a(char **argv)
 	i = -1;
 	while (nums[++i])
 	{
-		a->stack[i] = ft_atoi_ofd(nums[count - i]);
+		a->stack[i] = ft_atoi(nums[count - i]);
 		if (a->stack[i] == 0 && nums[count - i][0] != '0')
 			exit_err(a);
 		j = -1;

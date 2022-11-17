@@ -6,7 +6,7 @@
 /*   By: mfirdous <mfirdous@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/14 21:17:51 by mfirdous          #+#    #+#             */
-/*   Updated: 2022/11/14 23:03:43 by mfirdous         ###   ########.fr       */
+/*   Updated: 2022/11/15 11:35:13 by mfirdous         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,9 +82,9 @@ int	main(int argc, char **argv)
 		op = get_next_line(0);
 	}
 	if (is_sorted(a) == 0 && b->top == -1)
-		ft_printf("OK");
+		ft_printf("OK\n");
 	else
-		ft_printf("KO");
+		ft_printf("KO\n");
 	free(a->stack);
 	free(a);
 	free(b->stack);
